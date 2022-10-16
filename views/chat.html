@@ -12,8 +12,8 @@
 </head>
 <body>
     <h1 id="title" style="height:40px; color: goldenrod; font-weight: bold;"> &nbsp; Avalon Online</h1>
-    <div class="findRoom" style="color: black; border-radius: 25px; background-color: #ecc29b; border-style: solid; border-color: silver; border-width: 5px; padding: 20px;">
-        Choose room
+    <br><br><div class="findRoom" style="color: black; border-radius: 25px; background-color: #ecc29b; border-style: solid; border-color: silver; border-width: 5px; padding: 20px;">
+        Choose room 
     </div>
     <div class="room" style="width:100%; display:none;">
         <br><br>
@@ -58,25 +58,46 @@
                     &nbsp;&nbsp;&nbsp;<button id="readyButton">ready</button>
                 </div>
                 <div id="charactersForm" class="randomCharacters">
-                    <span id="charactersInformation"></span>
-                    <div><br>
-                        &nbsp;&nbsp;<span>Good Characters:</span><br>
-                        &nbsp;&nbsp;<input type="checkbox" id="Merlin" value="Merlin" checked="checked" class =" good_check"> <img src="./public/css/img/Merlin.png">
-                        &nbsp;&nbsp;<label for="Merlin">Merlin (Knowns evil, must remain hidden)</label>    <br>
-                        &nbsp;&nbsp;<input type="checkbox" id="Percival" value="Percival" class="   good_check">
-                        &nbsp;&nbsp;<label for="Percival">Percival (Knows Merlin)</label><br>
-                    </div>
-                    <div>
-                        &nbsp;&nbsp;<span>Evil Characters:</span><br><br>
-                        &nbsp;&nbsp;<input type="checkbox" id="Morgana" value="Morgana" class=" evil_check">
-                        &nbsp;&nbsp;<label for="Morgana">Morgana (Appears as Merlin)</label><br>
-                        &nbsp;&nbsp;<input type="checkbox" id="Assassin" value="Assassin" checked=" checked"     class   ="evil_check">
-                        &nbsp;&nbsp;<label for="Assassin">Assassin (Minion of Mordred)</label><br>
-                        &nbsp;&nbsp;<input type="checkbox" id="Mordred" value="Mordred" class=" evil_check">
-                        &nbsp;&nbsp;<label for="Mordred">Mordred (Unknown to Merlin)</label><br>
-                        &nbsp;&nbsp;<input type="checkbox" id="Oberon" value="Oberon" class="evil_check"    >
-                        &nbsp;&nbsp;<label for="Oberon">Oberon (Unknown to Evil)</label><br>
-                    </div><br>
+                    <span id="charactersInformation"></span><br>
+                    <table>
+                        <tr>
+                            <td colspan="2">&nbsp;&nbsp;<span>Good Characters:</span><br></td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;&nbsp;<input type="checkbox" id="Merlin" value="Merlin" checked="checked" class =" good_check"></td> 
+                            <td><div class="merlinimg"></div></td>
+                            <td>&nbsp;&nbsp;<label for="Merlin">Merlin (Knowns evil, must remain hidden)</label> </td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;&nbsp;<input type="checkbox" id="Percival" value="Percival" class=" good_check"></td>
+                            <td><div class="percivalimg"></div></td>
+                            <td>&nbsp;&nbsp;<label for="Percival">Percival (Knows Merlin)</label> </td>
+                        </tr>
+                        <tr><td><br></td></tr>
+                        <tr>
+                            <td colspan="2">&nbsp;&nbsp;<span>Evil Characters:</span><br></td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;&nbsp;<input type="checkbox" id="Morgana" value="Morgana" class=" evil_check"></td> 
+                            <td><div class="morganaimg"></div></td>
+                            <td>&nbsp;&nbsp;<label for="Morgana">Morgana (Appears as Merlin)</label></td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;&nbsp;<input type="checkbox" id="Assassin" value="Assassin" checked=" checked" class ="evil_check"> </td>
+                            <td><div class="assassinimg"></div></td>
+                            <td>&nbsp;&nbsp;<label for="Assassin">Assassin (Minion of Mordred)</label></td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;&nbsp;<input type="checkbox" id="Mordred" value="Mordred" class=" evil_check"> </td>
+                            <td><div class="mordredimg"></div></td>
+                            <td>&nbsp;&nbsp;<label for="Mordred">Mordred (Unknown to Merlin)</label></td>
+                        </tr>
+                        <tr>
+                            <td>&nbsp;&nbsp;<input type="checkbox" id="Oberon" value="Oberon" class="evil_check"> </td>
+                            <td><div class="oberonimg"></div></td>
+                            <td>&nbsp;&nbsp;<label for="Oberon">Oberon (Unknown to Evil)</label></td>
+                        </tr>
+                    </table><br>
                     &nbsp;&nbsp;&nbsp;<button id="charactersDoneButton">Done</button>
                 </div>
             </div>

@@ -29,7 +29,8 @@ body{
 p {line-height:18px;padding:2px; }
 div {width:500px;}
 #gameArea{
-    font-size: 18px;
+    font-size: 20px;
+    font-weight: bold;
     border-radius: 15px;
     vertical-align: top;
     top:0px;
@@ -81,7 +82,7 @@ div {width:500px;}
     border:1px solid #CCC; */
     margin-bottom:5px; 
     width:400px;
-    max-height:170px;
+    max-height:150px;
     overflow-x: auto;
     overflow-y: auto;
     z-index:10;
@@ -97,7 +98,7 @@ div {width:500px;}
     border:1px solid #CCC; 
     margin-top:10px; 
     width:400px;
-    height:170px;
+    height:150px;
     z-index: 1;
 }
 #input{ 
@@ -153,7 +154,7 @@ div {width:500px;}
     display:none;
 }
 #charactersInformation{
-    
+
 }
 .wait{
     display:initial;
@@ -188,3 +189,45 @@ div {width:500px;}
 img {
     border-radius: 50%;
   }
+.merlinimg{
+    width: 30px;
+    height: 30px;
+    background-image: url(img/Merlin.png);
+    background-repeat: no-repeat;
+    background-size: 30px;
+}
+.percivalimg{
+    width: 30px;
+    height: 30px;
+    background-image: url(img/Percival.png);
+    background-repeat: no-repeat;
+    background-size: 30px;
+}
+.assassinimg{
+    width: 30px;
+    height: 30px;
+    background-image: url(img/Assassin.png);
+    background-repeat: no-repeat;
+    background-size: 30px;
+}
+.mordredimg{
+    width: 30px;
+    height: 30px;
+    background-image: url(img/Mordred.png);
+    background-repeat: no-repeat;
+    background-size: 30px;
+}
+.morganaimg{
+    width: 30px;
+    height: 30px;
+    background-image: url(img/Morgana.png);
+    background-repeat: no-repeat;
+    background-size: 30px;
+}
+.oberonimg{
+    width: 30px;
+    height: 30px;
+    background-image: url(img/Oberon.png);
+    background-repeat: no-repeat;
+    background-size: 30px;
+}

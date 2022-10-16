@@ -304,7 +304,7 @@ $(function() { //$(document).ready(function() { ... }); it means that when docum
                 }
                 for (i = 0; i < json.playerData.length; i++) {
                     if (json.playerData[i].id == room_owner_id) {
-                        $('#roomOwner').html('Room owner: ' + json.playerData[i].name + ' (' + json.playerData[i].id + ')');
+                        $('#roomOwner').html('Room owner: ' + json.playerData[i].name + ' (' + (json.playerData[i].id+1) + ')');
                     }
                     if (json.playerData[i].id == player_id) inner_li += '<tr style="font-weight:bold;color:' + json.playerData[i].color + ';">';
                     else inner_li += '<tr style="color:' + json.playerData[i].color + ';">';
@@ -325,14 +325,14 @@ $(function() { //$(document).ready(function() { ... }); it means that when docum
                             }
                         }
                         if (player_role[0] == 'Oberon') {
-                            if (json.playerData[i].id == player_id) {
+                            if (json.playerData[i].id == player_id) {z
                                 inner_li += 'Evil ';
                             }
                         }
                     }
                     inner_li += '</td>';
     
-                    inner_li += '<td style="width:5px;">' + json.playerData[i].id + '</td><td style="width:80px;">' + json.playerData[i].name + '</td>';
+                    inner_li += '<td style="width:5px;">' + (json.playerData[i].id+1) + '</td><td style="width:80px;">' + json.playerData[i].name + "hgjhgj" + '</td>';
     
                     inner_li += '<td style="width:10px;">';
                     if (json.playerData[i].vote == true) {
@@ -423,10 +423,10 @@ $(function() { //$(document).ready(function() { ... }); it means that when docum
             //alert(change_index);
             for(i=0;i<show_list.length;i++){
                 var inner_html = '<td>';
-                if(show_list[i].id==room_owner_id) inner_html += '<span>room owner</span><br>';
+                if(show_list[i].id==room_owner_id) inner_html += '<span>Room Owner</span><br>';
                 else inner_html += '<span></span><br>';
 
-                if(show_list[i].id==leader_id) inner_html += '<span>leader</span><br>';
+                if(show_list[i].id==leader_id) inner_html += '<span>Leader</span><br>';
                 else inner_html += '<span></span><br>';
 
                 inner_html += '<span>';
@@ -460,12 +460,12 @@ $(function() { //$(document).ready(function() { ... }); it means that when docum
                     inner_html += last_show_list[i].role[0]+' ('+last_show_list[i].role[1]+')';
                 }
                 inner_html += '</span><br>';
-                inner_html += '<span style="color:'+show_list[i].color+';">'+show_list[i].name+' ('+show_list[i].id+')'+'</span><br>';
+                inner_html += '<span style="color:'+show_list[i].color+';">'+show_list[i].name+' ('+(show_list[i].id+1)+')'+'</span><br>';
 
-                inner_html += "<div class='sendMission'><input type='checkbox' id='member_" + show_list[i].id + "' value='" + show_list[i].id + "' class='member_check'>";
+                inner_html += "<div class='sendMission'><input type='checkbox' id='member_" + (show_list[i].id+1) + "' value='" + (show_list[i].id+1) + "' class='member_check'>";
                 inner_html += "</div><br>";
 
-                inner_html += '<span id="teammember_'+show_list[i].id+'" style="display:none">team member</span><br>';
+                inner_html += '<span id="teammember_'+(show_list[i].id+1)+'" style="display:none">team member</span><br>';
                 
                 if(show_list[i].vote==true){
                     inner_html += '<span>agree</span><br>';
