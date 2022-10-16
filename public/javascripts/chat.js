@@ -46,7 +46,7 @@ $(function() { //$(document).ready(function() { ... }); it means that when docum
     var myName = false;
 
     //建立websocket连接
-    socket = io.connect('http://localhost:3000');
+    socket = io.connect('https://myavalon-online.herokuapp.com/');
     //收到server的连接确认
     socket.on('open', function(json) { //socket.emit('open')
         room_id = json.room_id;
