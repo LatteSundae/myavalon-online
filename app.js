@@ -26,8 +26,9 @@ var show_emit = false;
 var express = require('express')
   , path = require('path')
   , app = express()
-  , server = require('http').createServer(app)
-  , io = require('socket.io').listen(server);
+  , server = require('http').createServer(app);
+
+var io = require('socket.io').listen(server);
 
 //设置日志级别
 io.set('log level', 1); 
@@ -38,7 +39,7 @@ io.set('log level', 1);
 //----------------------------------------------------------------------//
 //gameplay programming here!!
 //WebSocket listening
-io.on('connection', function (socket) {
+io.sockets.on('connection', function (socket) {
   if(show_emit) console.log('emit socket open (one client)');
   socket.emit('open',{room_list:room_list,room_id:null});//client is connect, not in a room yet
   // 打印握手信息
@@ -734,7 +735,7 @@ app.configure(function(){
   app.use(express.bodyParser());
   app.use(express.methodOverride());
   app.use(app.router);
-  app.use(express.static(path.join(__dirname, 'public')));
+  app.use(express.static(path.resolve(__dirname, 'public')));
 });
 
 app.configure('development', function(){

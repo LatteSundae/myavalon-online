@@ -58,8 +58,8 @@ $(function() { //$(document).ready(function() { ... }); it means that when docum
         }else{
             $('.findRoom').css('display','none');
             $('.room').css('display','initial');
-            $('#connectStatus').text('Choose a name:');
-            $('#title').html('Avalon ' + json.room_name);
+            $('#connectStatus').text('Pick a name:');
+            $('#title').html('Avalon Online <br> Room: ' + json.room_name);
         }
     });
 
@@ -79,7 +79,7 @@ $(function() { //$(document).ready(function() { ... }); it means that when docum
                     if (json.type === 'welcome') {
                         //new player login
                         if (myName == json.text) status.text(myName + ': ').css('color', json.color);
-                        p = '<p style="background:' + json.color + '">system  @ ' + json.time + ' : Welcome ' + json.text + '</p>';
+                        p = '<p style="background:' + json.color + '">[' + json.time + ']' + ' system ' + ' : Welcome ' + json.text + '</p>';
                     } else if (json.type == 'full') {
                         //the server is full
                         window.alert(json.text);
@@ -504,23 +504,23 @@ $(function() { //$(document).ready(function() { ... }); it means that when docum
 
     }
     var updateRoomListTable = function(room_list){
-        inner_table = "<span>Create new room: </span>";
-        inner_table += "<input type='text' id='roomInput' autocomplete='off'/><br><br>";
-        inner_table += "Room List";
+        inner_table = "<span><b><h3>Create room: &nbsp;</b></h3></span>";
+        inner_table += "<input type='text' id='roomInput' autocomplete='off' placeholder='Your room name'/><br><br>";
+        inner_table += "<b><h3>Room List:</b></h3>";
         inner_table += "<table><tr>";
-        inner_table += "<td>Room name</td><td>players#</td><td>join</td>"
+        inner_table += "<td>Room name</td><td>&nbsp; No. of players </td>"
         inner_table += "</tr>";
         //console.log(json.room_list);
         for(var key in room_list){
             //alert(json.room_list[key].room_name);
             if(room_list[key].player_data.length>0){
-                inner_table += "<tr><td>";
+                inner_table += "<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                 inner_table += room_list[key].room_name;
-                inner_table += "</td><td>";
+                inner_table += "</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                 inner_table += room_list[key].player_data.length;
-                inner_table += "</td><td>";
+                inner_table += "</td><td>&nbsp;&nbsp;&nbsp;";
                 if(room_list[key].state=='wait')
-                    inner_table += "<button value='"+key+"' class='roomJoin'>join</button>";
+                    inner_table += "<button value='"+key+"' class='roomJoin'>&nbsp;join&nbsp;</button>";
                 inner_table += "</td>";
                 inner_table += "</tr>";
             }
@@ -596,7 +596,7 @@ $(function() { //$(document).ready(function() { ... }); it means that when docum
     //监听message事件，打印消息信息
     socket.on('message', function(json) {
         if(json.room_id == room_id){
-            var p = '<p><span style="color:' + json.color + ';">' + json.author + '</span> @ ' + json.time + ' : ' + json.text + '</p>';
+            var p = '<p><span style="color:' + json.color + '">[' + json.time + '] ' + json.author + ' : ' + json.text + '</p>';
             content_height += 20;
             content.append(p);
             content.scrollTop(content_height); //auto scroll to bottom
@@ -749,8 +749,6 @@ $(function() { //$(document).ready(function() { ... }); it means that when docum
 
     });
     //--------------wait state--------------//
-
-    //通过“回车”提交聊天信息
     input.keydown(function(e) {
         if (e.keyCode === 13) {
             var msg = $(this).val();

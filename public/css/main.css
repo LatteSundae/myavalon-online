@@ -1,16 +1,33 @@
-* {padding:0px; margin:0px;}
-html{height:100%;}
-body{font-family:tahoma; font-size:12px;margin:10px; height:100%;}
+* {
+    padding:0px; 
+    margin:0px;
+}
+html{
+    height:100%;
+}
+body{
+    min-height:100%;
+    background:linear-gradient(0deg, rgba(247, 244, 245, 0.226), rgba(249, 255, 196, 0.267)), url("img/BG.jpg");
+    background-size:cover;
+    font-family: 'Poppins'; 
+    font-size:12px;
+    margin:10px; 
+    height:100%;
+}
 p {line-height:18px;padding:2px; }
 div {width:500px;}
 #gameArea{
+    border-radius: 15px;
     vertical-align: top;
     top:0px;
     left:25%;
     display:none;
     width:70%;
     height:100%;
-    background-color:#DDD;
+    background: linear-gradient(0deg, rgba(247, 244, 245, 0.288), rgba(165, 149, 10, 0.267)), url("img/table.jpg");
+    border-style: solid;
+    border-color: silver;
+    border-width: 5px;
 }
 #gameTableUp, #gameTableDown{
     width:100%;
@@ -23,11 +40,16 @@ div {width:500px;}
     table-layout: fixed;
 }
 #gameInformArea{
+    border-radius: 15px;
     vertical-align: top;
     display:none;
     width:25%;
     height:100%; 
-    background-color: #AAA;
+    background: url(img/gameinfor-01-01.png);
+    /*background-color: #9b8040;*/
+    border-style: solid;
+    border-color: silver;
+    border-width: 5px; 
 }
 #chatRoom{
     position: absolute;
@@ -50,6 +72,7 @@ div {width:500px;}
     bottom:0px;
 }
 #chatArea{
+    border-radius: 25px;
     position:relative;
     padding:5px; 
     background:#EEE; 
@@ -57,7 +80,7 @@ div {width:500px;}
     border:1px solid #CCC; 
     margin-top:10px; 
     width:400px;
-    height:126px;
+    height:200px;
     z-index: 1;
 }
 #input{ 
