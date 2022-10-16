@@ -46,6 +46,7 @@ $(function() { //$(document).ready(function() { ... }); it means that when docum
     var myName = false;
 
     //建立websocket连接
+    //socket = io.connect('http://localhost:3000');
     socket = io.connect('https://myavalon-online.herokuapp.com/');
     //收到server的连接确认
     socket.on('open', function(json) { //socket.emit('open')
@@ -58,8 +59,8 @@ $(function() { //$(document).ready(function() { ... }); it means that when docum
         }else{
             $('.findRoom').css('display','none');
             $('.room').css('display','initial');
-            $('#connectStatus').text('Pick a name:');
-            $('#title').html('Avalon Online <br> Room: ' + json.room_name);
+            $('#connectStatus').text('\xa0\xa0\xa0\xa0\xa0Pick a name:');
+            $('#title').html('&nbsp;&nbsp;Avalon Online <br> &nbsp;&nbsp;Room Name: ' + json.room_name);
         }
     });
 
@@ -125,7 +126,7 @@ $(function() { //$(document).ready(function() { ... }); it means that when docum
                         last_player_data=null;
                         if (room_owner_id == player_id) {
                             $('.randomCharacters').css('display', 'initial');
-                            $('.randomCharacters #charactersInformation').html('There are ' + json.good + ' good and ' + json.evil + ' evil.<br>Choose characters you want to add:<br>Percival and Morgana are a pair<br>');
+                            $('.randomCharacters #charactersInformation').html('&nbsp;&nbsp;There are ' + json.good + ' good and ' + json.evil + ' evil.<br>&nbsp;&nbsp;Choose characters you want to add:<br>&nbsp;&nbsp;Percival and Morgana are a pair<br>');
     
                             max_good = json.good;
                             max_evil = json.evil;

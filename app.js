@@ -758,7 +758,7 @@ var getTime=function(){
 }
 
 var getColor=function(){
-  //var colors = ['aliceblue','antiquewhite','aqua','aquamarine','pink','red','green','orange','blue','blueviolet','brown','burlywood','cadetblue'];
+  //var colors = ['#EA047E','#C47AFF','#905E96','#5C2E7E','#9C2C77','#645CAA','#EE6983','#AC7088','#F637EC','#F190B7'];
   //return colors[Math.round(Math.random() * 10000 % colors.length)];
   var letters = '0123456789ABCDEF';
   var color = '#';
