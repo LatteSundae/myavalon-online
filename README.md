@@ -1,31 +1,14 @@
 
-# Avalon Boardgame (socket.io)
-2018/02/04
-
-
-A single page avalon boardgame using websocket. And a Node.js server to handle the game process. Using socket.io instead of ws modules.
+# Avalon Online
+This is a single page Avalon Online is an adaptation of the board game called 'The Resistance: Avalon created by using websocket. And a Node.js server to handle the game process. And using socket.io instead of ws modules.
 
 ### Detail
+This is a part of Senior Project 1 of AU Student:
+1.Mr. Tana Jantayavichit (Lu) 
+2.Ms. Thanchanok Wisuttaporn (Tan)
+3.Mr. Ravee Virojsirasak (SunSun)
 
-#### Server
-* Implement a server to handle both chat room and Avalon game process with Node.js and socket.io.
-* Designed a finate state machine for processing the game.
+Done in Semester 1/2021
 
-#### Client
-* Implement a single page website to perform Avalon boardgame and chat room with jQuery.
-
-Simple chat room example:<br>
-http://blog.fens.me/nodejs-socketio-chat/ <br>
-app.js for server<br>
-chat.js for client<br>
-
-### Install
-
-```{bash}
-npm install
-node app.js
-```
-
-### Demo
-After installing, 
-http://localhost:3000
+### Link to Website
+https://myavalon-online.herokuapp.com/
