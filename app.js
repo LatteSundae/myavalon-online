@@ -764,7 +764,7 @@ app.configure('development', function(){
 
 //webscoket
 app.get('/', function(req, res){
-  res.sendfile('views/chat.html');
+  res.sendfile('views/game.html');
 });
 
 server.listen(app.get('port'), function(){
