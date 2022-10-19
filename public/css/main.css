@@ -197,7 +197,7 @@ div {width:500px;}
     border-width: 5px; 
     padding: 20px; 
     margin: 35px auto;
-    display:none;
+    display:initial;
 }
 img {
     border-radius: 50%;
