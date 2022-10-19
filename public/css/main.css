@@ -1,7 +1,7 @@
-* {
+/* * {
     padding:0px; 
     margin:0px;
-}
+} */
 
 html{
     height:100%;
@@ -278,8 +278,6 @@ box-shadow: 0 2px 5px #000;
 clear: both;
     color: #555555;
     /* text-align: justify; */
-    font-size: 20px;
-    font-family: sans-serif;
 }
 
 .cnt223 p a{
