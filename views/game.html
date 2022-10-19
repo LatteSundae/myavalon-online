@@ -12,27 +12,49 @@
     <script src="javascripts/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script src="javascripts/game.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.8.2.js"></script>
 </head>
+
 <body>
-    <h1 id="title" style="height:40px; color: goldenrod; font-weight: bold;"> &nbsp; Avalon Online</h1>
-    <div class="popup">
-        <button id="close">&times;</button>
-        <h2>Automatic Pop-Up</h2>
-        <p>
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Expedita distinctio fugiat alias iure qui, commodi minima magni ullam aliquam dignissimos?
-        </p>
-        <a href="#">Let's Go</a>
-    </div>
-    <script type="text/javascript">
-        window.addEventListener("load", function(){
-            setTimeout(
-                function open(event){
-                    document.querySelector(".popup").style.display = "block";
-                },
-                2000 
-            )
-        });
+    <!--Popup Box-->
+    <script type='text/javascript'>
+    $(function(){
+    var overlay = $('<div id="overlay"></div>');
+    overlay.show();
+    overlay.appendTo(document.body);
+    $('.popup').show();
+    $('.close').click(function(){
+    $('.popup').hide();
+    overlay.appendTo(document.body).remove();
+    return false;
+    });
+    
+    
+     
+    
+    $('.x').click(function(){
+    $('.popup').hide();
+    overlay.appendTo(document.body).remove();
+    return false;
+    });
+    });
     </script>
+    <div class='popup'>
+    <div class='cnt223'>
+    <h1>Avalon Online</h1>
+    <h3>The goal of Avalon</h3>
+    <ul>
+      <li>Players are either Loyal Servants of Arthur fighting for Goodness and honour or aligned with the Evil ways of Mordred.
+      <li>Good wins the game by successfully completing three Quests
+        <li>Evil wins if three Quests end in failure or by assassinating Merlin at the game’s end or if a Quest cannot be undertaken.
+
+    <br/>
+    <br/>
+    <a href='' class='close'>Close</a>
+    </p>
+    </div>
+    </div>
+    <h1 id="title" style="height:40px; color: goldenrod; font-weight: bold;"> &nbsp; Avalon Online</h1>
     <br><br><div class="findRoom" style="color: black; border-radius: 25px; background-color: #ecc29b; border-style: solid; border-color: silver; border-width: 5px; padding: 20px;">
         Choose room
     </div>
