@@ -329,7 +329,8 @@ cursor: pointer;
 }
 
 a{
+    font-size: 30px;
     display: block;
-    width: 113px;
-    margin: auto; 
+    width: 384px;
+    margin: 1px 1px 1px 584px; 
 }
