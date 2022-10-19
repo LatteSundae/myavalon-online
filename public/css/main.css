@@ -26,10 +26,10 @@ body{
     left:0;
     right:0;
 }
-h1 { 
+/* h1 { 
     font-size: 350%; 
     text-align: center;
-}
+} */
 
 p {line-height:18px;padding:2px; }
 div {width:500px;}
@@ -190,6 +190,7 @@ div {width:500px;}
 }
 .setName{
     display:initial;
+    margin: 1px auto;
 }
 img {
     border-radius: 50%;
