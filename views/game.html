@@ -118,81 +118,83 @@
             </div>
             <br>
             <div style="width:100%; height:60%;">
-                <div id="gameInformArea" style="color: white;">
-                    <br>
-                    &nbsp;&nbsp;<span id="stateDisplay" class="allStates">Status : Wating</span><br>
-                    &nbsp;<div class="allStates">
-                        <span id="roomOwner"></span><br>
-                        <span id="lastGameWinner"></span><br>
-                        <span id="lastMissionResult"></span><br>
-                    </div>
+                <div class="container custom-scrollbar"></div>
+                    <div id="gameInformArea" style="color: white;">
+                        <br>
+                        &nbsp;&nbsp;<span id="stateDisplay" class="allStates">Status : Wating</span><br>
+                        &nbsp;<div class="allStates">
+                            <span id="roomOwner"></span><br>
+                            <span id="lastGameWinner"></span><br>
+                            <span id="lastMissionResult"></span><br>
+                        </div>
 
-                    <div class="gameDetails">
-                        <span id="playerRole"></span><br>
-                        <span id="leader"></span><br>
-                        <span id="turn"></span><br>
-                        <span id="vote_turn"></span><br>
-                        <span id="team_size"></span><br>
-                        <span id="two_fail"></span><br>
-                        <span id="success_time"></span><br>
-                        <span id="fail_time"></span><br>
-                    </div>
-                    <div class="sendMission" id="sendMissionInform">
-                    </div>
-                    <div class="vote">
-                    </div>
-                    <div class="mission">
-                    </div>
-                    <div class="update">
-                    </div>
-                    <div class="findMerlin">
-                    </div>
-                    <div class="wait">
-                        &nbsp;&nbsp;&nbsp;<button id="playButton">play</button>
-                        &nbsp;&nbsp;&nbsp;<button id="readyButton">ready</button>
-                    </div>
-                    <div id="rolesForm" class="randomRole">
-                        <span id="rolesInformation"></span><br>
-                        <table>
-                            <tr>
-                                <td colspan="2">&nbsp;&nbsp;<span>Good roles:</span><br></td>
-                            </tr>
-                            <tr>
-                                <td>&nbsp;&nbsp;<input type="checkbox" id="Merlin" value="Merlin" checked="checked" class =" good_check"></td> 
-                                <td><div class="merlinimg"></div></td>
-                                <td>&nbsp;&nbsp;<label for="Merlin">Merlin (Knowns evil, must remain hidden)</label> </td>
-                            </tr>
-                            <tr>
-                                <td>&nbsp;&nbsp;<input type="checkbox" id="Percival" value="Percival" class=" good_check"></td>
-                                <td><div class="percivalimg"></div></td>
-                                <td>&nbsp;&nbsp;<label for="Percival">Percival (Knows Merlin)</label> </td>
-                            </tr>
-                            <tr><td><br></td></tr>
-                            <tr>
-                                <td colspan="2">&nbsp;&nbsp;<span>Evil roles:</span><br></td>
-                            </tr>
-                            <tr>
-                                <td>&nbsp;&nbsp;<input type="checkbox" id="Morgana" value="Morgana" class=" evil_check"></td> 
-                                <td><div class="morganaimg"></div></td>
-                                <td>&nbsp;&nbsp;<label for="Morgana">Morgana (Appears as Merlin)</label></td>
-                            </tr>
-                            <tr>
-                                <td>&nbsp;&nbsp;<input type="checkbox" id="Assassin" value="Assassin" checked=" checked" class ="evil_check"> </td>
-                                <td><div class="assassinimg"></div></td>
-                                <td>&nbsp;&nbsp;<label for="Assassin">Assassin (Minion of Mordred)</label></td>
-                            </tr>
-                            <tr>
-                                <td>&nbsp;&nbsp;<input type="checkbox" id="Mordred" value="Mordred" class=" evil_check"> </td>
-                                <td><div class="mordredimg"></div></td>
-                                <td>&nbsp;&nbsp;<label for="Mordred">Mordred (Unknown to Merlin)</label></td>
-                            </tr>
-                            <tr>
-                                <td>&nbsp;&nbsp;<input type="checkbox" id="Oberon" value="Oberon" class="evil_check"> </td>
-                                <td><div class="oberonimg"></div></td>
-                                <td>&nbsp;&nbsp;<label for="Oberon">Oberon (Unknown to Evil)</label></td>
-                            </tr>
-                        </table><br>
-                        &nbsp;&nbsp;&nbsp;<button id="rolesDoneButton">Done</button>
+                        <div class="gameDetails">
+                            <span id="playerRole"></span><br>
+                            <span id="leader"></span><br>
+                            <span id="turn"></span><br>
+                            <span id="vote_turn"></span><br>
+                            <span id="team_size"></span><br>
+                            <span id="two_fail"></span><br>
+                            <span id="success_time"></span><br>
+                            <span id="fail_time"></span><br>
+                        </div>
+                        <div class="sendMission" id="sendMissionInform">
+                        </div>
+                        <div class="vote">
+                        </div>
+                        <div class="mission">
+                        </div>
+                        <div class="update">
+                        </div>
+                        <div class="findMerlin">
+                        </div>
+                        <div class="wait">
+                            &nbsp;&nbsp;&nbsp;<button id="playButton">play</button>
+                            &nbsp;&nbsp;&nbsp;<button id="readyButton">ready</button>
+                        </div>
+                        <div id="rolesForm" class="randomRole">
+                            <span id="rolesInformation"></span><br>
+                            <table>
+                                <tr>
+                                    <td colspan="2">&nbsp;&nbsp;<span>Good roles:</span><br></td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;&nbsp;<input type="checkbox" id="Merlin" value="Merlin" checked="checked" class =" good_check"></td> 
+                                    <td><div class="merlinimg"></div></td>
+                                    <td>&nbsp;&nbsp;<label for="Merlin">Merlin (Knowns evil, must remain hidden)</label> </td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;&nbsp;<input type="checkbox" id="Percival" value="Percival" class=" good_check"></td>
+                                    <td><div class="percivalimg"></div></td>
+                                    <td>&nbsp;&nbsp;<label for="Percival">Percival (Knows Merlin)</label> </td>
+                                </tr>
+                                <tr><td><br></td></tr>
+                                <tr>
+                                    <td colspan="2">&nbsp;&nbsp;<span>Evil roles:</span><br></td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;&nbsp;<input type="checkbox" id="Morgana" value="Morgana" class=" evil_check"></td> 
+                                    <td><div class="morganaimg"></div></td>
+                                    <td>&nbsp;&nbsp;<label for="Morgana">Morgana (Appears as Merlin)</label></td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;&nbsp;<input type="checkbox" id="Assassin" value="Assassin" checked=" checked" class ="evil_check"> </td>
+                                    <td><div class="assassinimg"></div></td>
+                                    <td>&nbsp;&nbsp;<label for="Assassin">Assassin (Minion of Mordred)</label></td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;&nbsp;<input type="checkbox" id="Mordred" value="Mordred" class=" evil_check"> </td>
+                                    <td><div class="mordredimg"></div></td>
+                                    <td>&nbsp;&nbsp;<label for="Mordred">Mordred (Unknown to Merlin)</label></td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;&nbsp;<input type="checkbox" id="Oberon" value="Oberon" class="evil_check"> </td>
+                                    <td><div class="oberonimg"></div></td>
+                                    <td>&nbsp;&nbsp;<label for="Oberon">Oberon (Unknown to Evil)</label></td>
+                                </tr>
+                            </table><br>
+                            &nbsp;&nbsp;&nbsp;<button id="rolesDoneButton">Done</button>
+                        </div>
                     </div>
                 </div>
                 <div id="gameArea">
@@ -203,9 +205,11 @@
             </div>
             <div class="allStates" id="chatRoom">
                 <div class="displayChat" style="display:inline-block;">
+                    <div class="container custom-scrollbar"></div>
                     <div id="chatArea">
                         <div id="content"></div>
                     </div>
+                    <div class="container custom-scrollbar"></div>
                     <span id="status">Connecting...</span>
                     <input type="text" id="input" autocomplete="off" />
                 </div>
