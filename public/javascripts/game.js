@@ -41,8 +41,9 @@ $(function() {
     var myName = false;
 
     //Websocket
-    socket = io.connect('http://localhost:3000'); //For testing local
-    //socket = io.connect('https://myavalon-online.herokuapp.com/');
+    //socket = io.connect('http://localhost:3000'); //For testing local
+    socket = io.connect('https://myavalon-online.herokuapp.com/');
+    
     //Server
     socket.on('open', function(json) { 
         //socket.emit('open')
