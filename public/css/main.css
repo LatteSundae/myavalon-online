@@ -196,8 +196,8 @@ div {width:500px;}
     border-color: silver; 
     border-width: 5px; 
     padding: 20px; 
-    margin: 1px auto;
-    display:initial;
+    margin: 35px auto;
+    display:none;
 }
 img {
     border-radius: 50%;

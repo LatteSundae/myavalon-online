@@ -42,12 +42,57 @@
     <div class='popup'>
     <div class='cnt223'>
     <h1 style="height:40px; color: goldenrod;">Avalon Online</h1>
-    <h3>The goal of Avalon</h3><br>
+    <h3 style="margin: -11px auto;">The goal of Avalon</h3><br>
     <ul>
       <li>Players are either Loyal Servants of Arthur fighting for Goodness and honour or aligned with the Evil ways of Mordred.
       <li>Good wins the game by successfully completing three Quests
         <li>Evil wins if three Quests end in failure or by assassinating Merlin at the game’s end or if a Quest cannot be undertaken.
-
+        </ul>
+    <h3 style="margin: -11px auto;">Player</h3><br>
+    <div class="avalonplayer"></div>
+        <ul>
+            This is a number of Good Role and Evil Role that can be selected (Merlin and Assassin will always be included) and randomize to all players.
+        </ul>
+    <h3 style="margin: -11px auto;">Role</h3><br>
+    <table>
+        <tr>
+            <td colspan="2">&nbsp;&nbsp;<span>Good roles:</span><br></td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="checkbox" id="Merlin" value="Merlin" checked="checked" class =" good_check"></td> 
+            <td><div class="merlinimg"></div></td>
+            <td>&nbsp;&nbsp;<label for="Merlin">Merlin: Knows all evils</label> </td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="checkbox" id="Percival" value="Percival" class=" good_check"></td>
+            <td><div class="percivalimg"></div></td>
+            <td>&nbsp;&nbsp;<label for="Percival">Percival: Know who is Merlins (Real Merlin and Morgana) but doesn't know which is which.</label> </td>
+        </tr>
+        <tr><td><br></td></tr>
+        <tr>
+            <td colspan="2">&nbsp;&nbsp;<span>Evil roles:</span><br></td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="checkbox" id="Morgana" value="Morgana" class=" evil_check"></td> 
+            <td><div class="morganaimg"></div></td>
+            <td>&nbsp;&nbsp;<label for="Morgana">Morgana: Appear to be Merlin to Percival</label></td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="checkbox" id="Assassin" value="Assassin" checked=" checked" class ="evil_check"> </td>
+            <td><div class="assassinimg"></div></td>
+            <td>&nbsp;&nbsp;<label for="Assassin">Assassin: Can try to assassin Merlin at the end of the game to win</label></td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="checkbox" id="Mordred" value="Mordred" class=" evil_check"> </td>
+            <td><div class="mordredimg"></div></td>
+            <td>&nbsp;&nbsp;<label for="Mordred">Mordred: Doesn’t appear to Merlin</label></td>
+        </tr>
+        <tr>
+            <td>&nbsp;&nbsp;<input type="checkbox" id="Oberon" value="Oberon" class="evil_check"> </td>
+            <td><div class="oberonimg"></div></td>
+            <td>&nbsp;&nbsp;<label for="Oberon">Oberon: Doesn't appear to another evil player</label></td>
+        </tr>
+    </table>
     <br/>
     <br/>
     <a href='' class='close'>Close</a>
