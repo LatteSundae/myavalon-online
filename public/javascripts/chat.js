@@ -1,61 +1,57 @@
-//----------------------------------------------------------------------//
-//public information for game control
-//-----game states-----//
-var states = ["wait", "randomCharacters", "sendMission", "vote", "mission",
-    "missionSuccess", "missionFail", "update", "findMerlin", "badWin", "goodwin"];
+//Game Control
 
-//-----room data-----//
-//room id
-var room_id = null; //if room id is not null, means that this client is in a room (room_list[room_id])
+//Game State Array
+var states = ["wait","randomRole","sendMission","vote","mission",
+  "missionSuccess","missionFail","update","findMerlin","evilWin","goodWin"]; 
+
+//Room data
+var room_id = null; //if room id is not null, means that this player is in a room (room_list[room_id])
 var room_name = "";
 var room_owner_id = null;
 
-//-----game data-----//
-//public information for avalon game
+//Player Information
 var player_data = []; //player list
 var last_player_data = null; //last games player list
 var set_name = false; //check if player's name is set
 var join_game = false; //check if player is join a game
 var player_id = null; //check if player is in a game
-var player_role = null; //this client's role
+var player_role = null; //this player's role
 
-//change when send mission state
+//Change every time mission end
 var leader_id = null;
 var leader_name = null;
 var team_size = null;
 var team_members = [];
 var two_fail = false;
 
-//characters set
+//Role set
 var max_good = 0;
 var max_evil = 0;
 var good_characters = [];
 var evil_characters = [];
 
-//-----UI-----//
 var content_height = 0;
 
-//----------------------------------------------------------------------//
-
 $(function() {
-    var content = $('#content'); //like document.getelementbyid
+    var content = $('#content');
     var status = $('#status');
     var input = $('#input');
     var playerList = $('#playerList');
     var stateDisplay = $('#stateDisplay');
     var myName = false;
 
-    //建立websocket连接
-    //socket = io.connect('http://localhost:3000');
-    socket = io.connect('https://myavalon-online.herokuapp.com/');
-    //收到server的连接确认
-    socket.on('open', function(json) { //socket.emit('open')
+    //Websocket
+    socket = io.connect('http://localhost:3000'); //For testing local
+    //socket = io.connect('https://myavalon-online.herokuapp.com/');
+    //Server
+    socket.on('open', function(json) { 
+        //socket.emit('open')
         room_id = json.room_id;
-        //if room id is null, means that client is not in any room, show the room list
+
+        //if room id is null means that player is not in any room, show the room list
         if(room_id==null){
             updateRoomListTable(json.room_list);
             
-
         }else{
             $('.findRoom').css('display','none');
             $('.room').css('display','initial');
@@ -68,33 +64,39 @@ $(function() {
         updateRoomListTable(json.room_list);
     });
 
-    //----------------------------------------------------------------------//
-    //gameplay programming here!
-    //--------------All states are different--------------//
-    //监听system事件，判断welcome或者disconnect，打印系统消息信息
+    //Game Play
+    //All State
     socket.on('system', function(json) {
         if(json.room_id==room_id){
             var p = '';
             switch (json.state) {
                 case "wait":
+                    //new player login
                     if (json.type === 'welcome') {
-                        //new player login
                         if (myName == json.text) status.text(myName + ': ').css('color', json.color);
                         p = '<p style="background:' + json.color + '">[' + json.time + ']' + ' system ' + ' : Welcome ' + json.text + '</p>';
-                    } else if (json.type == 'full') {
-                        //the server is full
+                    } 
+                    
+                    //the server is full
+                    else if (json.type == 'full') {
                         window.alert(json.text);
                         set_name = false;
                         myName = false;
                         join_game = false;
-                    } else if (json.type == 'ready' && join_game) {
+                    } 
+                    
+                    else if (json.type == 'ready' && join_game) {
                         //show the ready button
                         $('.wait #readyButton').css('display', 'initial');
-                    } else if (json.type == 'hideReady' && join_game) {
+                    } 
+                    
+                    else if (json.type == 'hideReady' && join_game) {
                         //hide the ready button
                         $('.wait #readyButton').css('display', 'none');
                         $('.wait #readyButton').html('ready');
-                    } else if (json.type == 'allReady' && join_game) {
+                    } 
+                    
+                    else if (json.type == 'allReady' && join_game) {
                         //all ready, show the play button for room owner
                         if (room_owner_id == player_id && json.value) {
                             $('.wait #playButton').css('display', 'initial');
@@ -103,8 +105,11 @@ $(function() {
                             $('.wait #playButton').css('display', 'none');
                             $('.wait #playButton').html('play');
                         }
-                    } else if (json.type == 'join') {
-                        //known this player is joined, add needed value
+                    } 
+                    
+                    //known this player is joined then add needed value
+                    else if (json.type == 'join') {
+                        
     
                         $('.allStates').css('display', 'initial');
                         $('.setName').css('display', 'none');
@@ -117,33 +122,61 @@ $(function() {
                         room_owner_id = json.room_owner_id;
                     }
                     break;
-                case "randomCharacters":
-                    $('.randomCharacters').css('display', 'none');
+
+                //Random Role State
+                case "randomRole":
+                    $('.randomRole').css('display', 'none');
                     if (json.type == 'chooseCharactersSet') {
-                        //alert(room_owner_id + " " + player_id);
                         //show choose character form for room owner
     
                         last_player_data=null;
                         if (room_owner_id == player_id) {
-                            $('.randomCharacters').css('display', 'initial');
-                            $('.randomCharacters #charactersInformation').html('&nbsp;&nbsp;There are ' + json.good + ' good and ' + json.evil + ' evil.<br>&nbsp;&nbsp;Choose characters you want to add:<br>&nbsp;&nbsp;Percival and Morgana are a pair<br>');
+                            $('.randomRole').css('display', 'initial');
+                            $('.randomRole #charactersInformation').html('&nbsp;&nbsp;There are ' + json.good + ' good and ' + json.evil + ' evil.<br>&nbsp;&nbsp;Choose characters you want to add:<br>&nbsp;&nbsp;Percival and Morgana are a pair<br>');
     
                             max_good = json.good;
                             max_evil = json.evil;
-                            updateCharactersSet();
+                            updateRolesSet();
                         } else {
-                            $('.randomCharacters').css('display', 'none');
+                            $('.randomRole').css('display', 'none');
                         }
                     }
                     break;
+
+                //Voting State
+                case "vote":
+                    //show team members and vote form
+                    if (json.type == 'vote') {
+                        team_members = json.team_members;
+                        voteForm();
+                    }
+                    break;
+
+                //Assassin try assassinating Merlin Role State 
+                case "findMerlin":
+                    if (json.type == 'kill') {
+                        //check if this player is assassin, show find merlin form
+                        var is_assassin = false;
+                        for (i = 0; i < player_data.length; i++) {
+                            if (player_data[i].id == player_id && player_data[i].role[0] == 'Assassin') {
+                                is_assassin = true;
+                            }
+                        }
+                        if (is_assassin) {
+                            findMerlinForm(json.kill_list);
+                        }
+                    }
+                    break;
+                
+                //Vote to send Team Members on Mission  
                 case "sendMission":
                     if (json.type == 'setLeader') {
                         //set leader and if this player is leader, show choose members form
                         $('.gameDetails').css('display', 'initial');
                         leader_id = json.leader_id;
                         team_size = json.team_size;
-                        $('#turn').html('Round ' + (json.turn + 1));
-                        $('#vote_turn').html('Vote ' + (json.vote_turn) + ' times');
+                        $('#turn').html('&nbsp;&nbsp;Round ' + (json.turn + 1));
+                        $('#vote_turn').html('&nbsp;&nbsp;Vote ' + (json.vote_turn) + ' times');
                         if (json.two_fail && json.turn == 3) {
                             $('#two_fail').html("Need two fail this time");
                         } else {
@@ -166,23 +199,18 @@ $(function() {
                         }
                     }
                     break;
-                case "vote":
-                    if (json.type == 'vote') {
-                        //show team members and vote form
-                        team_members = json.team_members;
-                        voteForm();
-                    }
-                    break;
+
+                //Mission State
                 case "mission":
+                    //check if this player is in the team members, show success and fail button
                     if (json.type == 'vote') {
-                        //check if this player is in the team members, show success and fail button
                         team_members = json.team_members;
                         $('.mission').css('display', 'initial');
                         var to_vote = false;
-                        var inner_span = "<span>Team members are:</span><br>";
-                        //inner_span += player_id + "<br>";
+                        var inner_span = "&nbsp;&nbsp;<span><span>Team members are:</span><br>";
                         for (i = 0; i < team_members.length; i++) {
-                            inner_span += "<span>" + team_members[i][1] + " (" + team_members[i][0] + ")<span><br>";
+                            j = i+1;
+                            inner_span += "&nbsp;&nbsp;"+ j +". "+ "<span>" + team_members[i][1] + " (" + team_members[i][0] + ")<span><br>";
                             if (team_members[i][0] == player_id) {
                                 //inner_span += "<span>You have to vote</span><br>";
                                 to_vote = true;
@@ -191,7 +219,7 @@ $(function() {
                         }
     
                         if (to_vote) {
-                            inner_span += "<button id='successButton'>success</button>&nbsp;&nbsp;";
+                            inner_span += "&nbsp;&nbsp;<button id='successButton'>success</button>&nbsp;&nbsp;";
                             inner_span += "<button id='failButton'>fail</button>";
                         }
                         $('.mission').html(inner_span);
@@ -207,58 +235,52 @@ $(function() {
                         }
                     }
                     break;
+
+                //Mission Success State
                 case "missionSuccess":
+                    //update game detail
                     if (json.type == 'update') {
-                        //update game detail
                         $('.update').css('display', 'initial');
                         var inner_span = "<span>Mission success</span><br>";
                         $('.update').html(inner_span);
-                        $('#success_time').html("Success : " + json.detail[2]);
-                        $('#fail_time').html("Fail : " + json.detail[3]);
-                        $('#lastMissionResult').html('Last mission: ' + json.detail[0] + ' success,' + json.detail[1] + ' fail');
+                        $('#success_time').html("&nbsp;&nbsp;Success : " + json.detail[2]);
+                        $('#fail_time').html("&nbsp;&nbsp;Fail : " + json.detail[3]);
+                        $('#lastMissionResult').html('&nbsp;&nbsp;Last mission: <br>'  + '&nbsp;&nbsp; Success: '+ json.detail[0] + '<br>&nbsp;&nbsp; Fail: '+json.detail[1]);
                     }
                     break;
+                
+                //Mission Failed State
                 case "missionFail":
+                    //update game detail
                     if (json.type == 'update') {
-                        //update game detail
                         $('.update').css('display', 'initial');
                         var inner_span = "<span>Mission fail</span><br>";
                         inner_span += json.detail[0] + " success " + json.detail[1] + " fail";
                         $('.update').html(inner_span);
-                        $('#success_time').html("Success : " + json.detail[2]);
-                        $('#fail_time').html("Fail : " + json.detail[3]);
-                        $('#lastMissionResult').html('Last mission: ' + json.detail[0] + ' success,' + json.detail[1] + ' fail');
+                        $('#success_time').html("&nbsp;&nbsp;Success : " + json.detail[2]);
+                        $('#fail_time').html("&nbsp;&nbsp;Fail : " + json.detail[3]);
+                        $('#lastMissionResult').html('&nbsp;&nbsp;Last mission: ' + json.detail[0] + ' success,' + json.detail[1] + ' fail');
                     }
     
                     break;
                 case "update":
                     break;
-                case "findMerlin":
-                    if (json.type == 'kill') {
-                        //check if this player is assassin, show find merlin form
-                        var is_assassin = false;
-                        for (i = 0; i < player_data.length; i++) {
-                            if (player_data[i].id == player_id && player_data[i].role[0] == 'Assassin') {
-                                is_assassin = true;
-                            }
-                        }
-                        if (is_assassin) {
-                            findMerlinForm(json.kill_list);
-                        }
-                    }
-                    break;
+                
+                //Evil Win 
                 case "evilWin":
                     if (json.type == 'endGame') {
                         //show last game winner
-                        $('#lastGameWinner').html('Evil Wins!');
+                        $('#lastGameWinner').html('&nbsp;&nbsp;Evil Wins!');
                         last_player_data = json.last_player_data;
     
                     }
                     break;
+
+                //Good Side Win
                 case "goodWin":
                     if (json.type == 'endGame') {
                         //show last game winner
-                        $('#lastGameWinner').html('Good Wins!');
+                        $('#lastGameWinner').html('&nbsp;&nbsp;Good Wins!');
                         last_player_data = json.last_player_data;
     
                     }
@@ -266,18 +288,20 @@ $(function() {
                 default:
                     break;
             }
-            //--------------All states are different--------------//
     
-            //--------------All states are same--------------//
+            //If player leave the room, system announce
             if (json.type == 'disconnect') {
                 if (json.text != false) {
-                    p = '<p style="background:' + json.color + '">system  @ ' + json.time + ' : Bye ' + json.text + '</p>';
+                    p = '<p style="background:' + json.color + '">system  @ ' + json.time + ' : Left ' + json.text + '</p>';
                 }
     
-            } else if (json.type == 'playerList') {
-                //update player list
+            } 
+            
+            //update player list
+            else if (json.type == 'playerList') {
                 inner_li = '';
                 playerList.html('');
+
                 //update room owner
                 room_owner_id = json.room_owner_id;
     
@@ -287,21 +311,24 @@ $(function() {
                     if (leader_id != null && leader_id == json.playerData[i].id) leader_name = json.playerData[i].name;
                 }
                 if (player_role != null) {
-                    $('#playerRole').html('You are ' + player_role[0] + ' (' + player_role[1] + ')!');
-                } else {
+                    $('#playerRole').html('&nbsp;&nbsp;You are ' + player_role[0] + ' (' + player_role[1] + ')!');
+                } 
+                else {
                     $('#playerRole').html('');
                 }
     
-                //show leader
+                //Show leader
                 if (leader_id != null) {
-                    $('#leader').html('The leader is ' + leader_name + ' (' + leader_id + ')<br><br>');
-                } else {
-                    $('#leader').html('<br><br>');
+                    $('#leader').html('&nbsp;&nbsp;The leader is ' + leader_name + ' (' + leader_id + ')<br>');
+                } 
+                else {
+                    $('#leader').html('<br>');
                 }
     
                 if (room_owner_id == null) {
                     $('#roomOwner').html('');
                 }
+
                 for (i = 0; i < json.playerData.length; i++) {
                     if (json.playerData[i].id == room_owner_id) {
                         $('#roomOwner').html('Room owner: ' + json.playerData[i].name + ' (' + (json.playerData[i].id+1) + ')');
@@ -336,9 +363,9 @@ $(function() {
     
                     inner_li += '<td style="width:10px;">';
                     if (json.playerData[i].vote == true) {
-                        inner_li += " agree";
+                        inner_li += " agree ";
                     } else if (json.playerData[i].vote == false) {
-                        inner_li += " disagree";
+                        inner_li += " disagree ";
                     }
                     if (json.playerData[i].ready) inner_li += ' ready';
                     inner_li += '</td>';
@@ -347,8 +374,9 @@ $(function() {
                 playerList.html(inner_li);
                 player_data = json.playerData;
                 updateBoard();
-    
-            } else if (json.type == 'changeState') {
+            } 
+            
+            else if (json.type == 'changeState') {
                 //update state
                 stateDisplay.html('state : ' + json.state);
                 for (i = 0; i < states.length; i++) {
@@ -358,7 +386,9 @@ $(function() {
                 }
                 $("." + json.state).css('display', 'initial');
                 if (json.state == "wait") init();
-            }else if(json.type=='exitRoom'){
+            }
+            
+            else if(json.type=='exitRoom'){
                 window.alert("This room is deleted!");
                 room_id = null;
 
@@ -370,19 +400,19 @@ $(function() {
     
             if (p != '') content_height += 20;
             content.append(p);
-            content.scrollTop(content_height); //auto scroll to bottom
+            content.scrollTop(content_height); //auto scroll chat to bottom
     
         }
     });
-    //--------------Function to use here--------------//
-    //--------------All states--------------//
+
+    //Function
     var init = function() {
         for (i = 0; i < states.length; i++) {
             $("." + states[i]).css('display', 'none');
         }
         $('.wait').css('display', 'initial');
 
-        //gameDetails
+        //Game Details
         $('.gameDetails').css('display', 'none');
         $('#playerRole').html("");
         $('#leader').html("");
@@ -396,30 +426,33 @@ $(function() {
         leader_id = null;
         player_role = null;
 
-        //wait
+        //Wait State
         $('.wait #playButton').html("play");
         $('.wait #readyButton').html("ready");
 
-        //randomCharacters
-        $('.randomCharacters #Merlin').attr('checked', true);
-        $('.randomCharacters #Percival').attr('checked', false);
-        $('.randomCharacters #Morgana').attr('checked', false);
-        $('.randomCharacters #Assassin').attr('checked', true);
-        $('.randomCharacters #Mordred').attr('checked', false);
-        $('.randomCharacters #Oberon').attr('checked', false);
+        //randomRole
+        $('.randomRole #Merlin').attr('checked', true);
+        $('.randomRole #Percival').attr('checked', false);
+        $('.randomRole #Morgana').attr('checked', false);
+        $('.randomRole #Assassin').attr('checked', true);
+        $('.randomRole #Mordred').attr('checked', false);
+        $('.randomRole #Oberon').attr('checked', false);
 
 
     };
+
+    //Update Board when player join or leave
     var updateBoard = function(){
-        //update board with client theirselves show on the middle of tabledown
         if(player_id!=null){
             //create show list
             $('#gameTableUp').html('');
             $('#gameTableDown').html('');
             var show_list = rotateArray(player_data,player_id);
             if(last_player_data!=null) var last_show_list = rotateArray(last_player_data,player_id);
+
             //show on the board
             var change_index = Math.ceil(show_list.length/2);
+
             //alert(change_index);
             for(i=0;i<show_list.length;i++){
                 var inner_html = '<td>';
@@ -438,51 +471,64 @@ $(function() {
                                     inner_html += 'Evil';
                                 }
     
-                            }else if(player_role[0]=='Percival'){
+                            }
+                            
+                            else if(player_role[0]=='Percival'){
                                 if(show_list[i].role[0]=='Merlin'||show_list[i].role[0]=='Morgana'){
                                     inner_html += 'Merlin';
                                 }
     
-                            }else if(player_role[1]=='Evil'){
+                            }
+                            
+                            else if(player_role[1]=='Evil'){
                                 if(show_list[i].role[1]=='Evil'&&show_list[i].role[0]!='Oberon'){
                                     inner_html += 'Evil';
                                 }
     
                             }
                         }
+
                         if(player_id==show_list[i].id){
-                            //yourself
                             inner_html += show_list[i].role[0]+' ('+show_list[i].role[1]+')';
     
                         }
                     }
-                }else{
+                }
+                
+                else{
                     inner_html += last_show_list[i].role[0]+' ('+last_show_list[i].role[1]+')';
                 }
+
                 inner_html += '</span><br>';
                 inner_html += '<span style="color:'+show_list[i].color+';">'+show_list[i].name+' ('+(show_list[i].id+1)+')'+'</span><br>';
 
                 inner_html += "<div class='sendMission'><input type='checkbox' id='member_" + (show_list[i].id+1) + "' value='" + (show_list[i].id+1) + "' class='member_check'>";
                 inner_html += "</div><br>";
 
-                inner_html += '<span id="teammember_'+(show_list[i].id+1)+'" style="display:none">team member</span><br>';
+                inner_html += '<span id="teammember_'+(show_list[i].id+1)+'" style="display:none">Team member</span><br>';
                 
                 if(show_list[i].vote==true){
                     inner_html += '<span>agree</span><br>';
-                }else if(show_list[i].vote==false){
+                }
+                
+                else if(show_list[i].vote==false){
                     inner_html += '<span>disagree</span><br>';
                 }
+
                 inner_html += '</td>';
                 if(i>=change_index){
                     //table up
                     $('#gameTableUp').prepend(inner_html);
-                }else{
+                }
+                
+                else{
                     //table down
                     $('#gameTableDown').append(inner_html);
                 }
             }
         }
     };
+
     var rotateArray = function(array,id){
         show_list = array;
         //window.alert(player_id);
@@ -504,6 +550,8 @@ $(function() {
         return show_list;
 
     }
+
+    //Home Screen create room and join room from list
     var updateRoomListTable = function(room_list){
         inner_table = "<span><b><h3>Create room: &nbsp;</b></h3></span>";
         inner_table += "<input type='text' id='roomInput' autocomplete='off' placeholder='Your room name'/><br><br>";
@@ -513,7 +561,6 @@ $(function() {
         inner_table += "</tr>";
         //console.log(json.room_list);
         for(var key in room_list){
-            //alert(json.room_list[key].room_name);
             if(room_list[key].player_data.length>0){
                 inner_table += "<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                 inner_table += room_list[key].room_name;
@@ -526,31 +573,31 @@ $(function() {
                 inner_table += "</tr>";
             }
         }
+
         inner_table += "</table>";
         $('.findRoom').html(inner_table);
     }
-    //--------------All states--------------//
-    //--------------randomCharacters states--------------//
-    var updateCharactersSet = function() {
-        $('.randomCharacters').css('display', 'initial');
+
+    //Put selected role to the list
+    var updateRolesSet = function() {
+        $('.randomRole').css('display', 'initial');
         good_characters = [];
         evil_characters = [];
-        if ($('.randomCharacters #Merlin').is(":checked")) good_characters.push("Merlin");
-        if ($('.randomCharacters #Percival').is(":checked")) good_characters.push("Percival");
-        if ($('.randomCharacters #Morgana').is(":checked")) evil_characters.push("Morgana");
-        if ($('.randomCharacters #Assassin').is(":checked")) evil_characters.push("Assassin");
-        if ($('.randomCharacters #Mordred').is(":checked")) evil_characters.push("Mordred");
-        if ($('.randomCharacters #Oberon').is(":checked")) evil_characters.push("Oberon");
+        if ($('.randomRole #Merlin').is(":checked")) good_characters.push("Merlin");
+        if ($('.randomRole #Percival').is(":checked")) good_characters.push("Percival");
+        if ($('.randomRole #Morgana').is(":checked")) evil_characters.push("Morgana");
+        if ($('.randomRole #Assassin').is(":checked")) evil_characters.push("Assassin");
+        if ($('.randomRole #Mordred').is(":checked")) evil_characters.push("Mordred");
+        if ($('.randomRole #Oberon').is(":checked")) evil_characters.push("Oberon");
 
     };
-    //--------------randomCharacters states--------------//
-    //--------------sendMission states--------------//
+
+    //sendMssion
     var sendMissionForm = function() {
         $('.sendMission').css('display', 'initial');
         $('.member_check').css('display','initial');
-        //alert($('.member_check').val());
-        //$('.sendMission .member_check').css('display','initial');
-        var inner_input = "<span>Choose the team: (team size is " + team_size + ")</span><br>";
+
+        var inner_input = "<br>&nbsp;&nbsp;<span>Choose the team: (team size is " + team_size + ")</span><br>";
         /*for (i = 0; i < player_data.length; i++) {
             inner_input += "<input type='checkbox' id='member_" + player_data[i].id + "' value='" + player_data[i].id + "' class='member_check'>";
             inner_input += "<label for='member_" + player_data[i].id + "'>" + player_data[i].name + " (" + player_data[i].id + ")</label><br>";
@@ -558,55 +605,57 @@ $(function() {
         inner_input += "<button id='memberDoneButton'>Done</button>";*/
         $('#sendMissionInform').html(inner_input);
     };
+
+    //Push selected player to team member list
     var updateTeamMembers = function() {
         team_members = [];
         for (i = 0; i < player_data.length; i++) {
             if ($('.sendMission #member_' + player_data[i].id).is(":checked")) team_members.push([player_data[i].id, player_data[i].name]);
         }
     };
-    //--------------sendMission states--------------//
-    //--------------vote states--------------//
+
+    //Vote State
     var voteForm = function() {
         $('.vote').css('display', 'initial');
-        var inner_span = "<span>Team members are:</span><br>";
+        var inner_span = "&nbsp;&nbsp;<span>Team members are:</span><br>";
         for (i = 0; i < team_members.length; i++) {
-            inner_span += "<span>" + team_members[i][1] + " (" + team_members[i][0] + ")<span><br>";
+            j = i+1;
+            inner_span += "&nbsp;&nbsp;"+ j +". "+ "<span>" + team_members[i][1] + " (" + team_members[i][0] + ")<span><br>";
         }
-        inner_span += "<button id='voteAgreeButton'>agree</button>&nbsp;&nbsp;";
-        inner_span += "<button id='voteDisagreeButton'>disagree</button>";
+
+        //Agree and Disagree Button
+        inner_span += "&nbsp;&nbsp;<button id='voteAgreeButton'>agree</button>&nbsp;&nbsp;";
+        inner_span += "&nbsp;&nbsp;<button id='voteDisagreeButton'>disagree</button>";
         $('.vote').html(inner_span);
     };
-    //--------------vote states--------------//
-    //--------------findMerlin states--------------//
+
+    //Find Merlin State
     var findMerlinForm = function(kill_list) {
         $('.findMerlin').css('display', 'initial');
-        var inner_input = "<span>Find merlin:</span><br>";
-        inner_input += "<select id='selectMerlin'>";
+        var inner_input = "&nbsp;&nbsp;<span>Find merlin:</span><br>";
+        inner_input += "&nbsp;&nbsp;<select id='selectMerlin'>";
         for (i = 0; i < kill_list.length; i++) {
             inner_input += "<option value='" + kill_list[i][0] + "'>" + kill_list[i][1] + " (" + kill_list[i][0] + ")</option>";
         }
         inner_input += "</select><br>";
-        inner_input += "<button id='findButton'>done</button><br>";
+        inner_input += "&nbsp;&nbsp;<button id='findButton'>done</button><br>";
         $('.findMerlin').html(inner_input);
     };
-    //--------------findMerlin states--------------//
-
-    //--------------Function to use here--------------//
 
 
-    //监听message事件，打印消息信息
+    //Player sending message in chat
     socket.on('message', function(json) {
         if(json.room_id == room_id){
+            //Player color, time, player name, text message
             var p = '<p><span style="color:' + json.color + '">[' + json.time + '] ' + json.author + ' : ' + json.text + '</p>';
             content_height += 20;
             content.append(p);
-            content.scrollTop(content_height); //auto scroll to bottom
+            content.scrollTop(content_height); //auto scroll chat to bottom
         }   
     });
 
-    //----------------------------------------------------------------------//
-    //--------------Button or Input or Form or Others--------------//
-    //--------------findMerlin state--------------//
+    //Button or Input or Form or Others
+    //FindMerlin State
     $('.findMerlin').on('click', '#findButton', function() {
         //alert('click');
         $('.findMerlin').css('display', 'none');
@@ -614,8 +663,8 @@ $(function() {
         obj['value'] = $('#selectMerlin').val();
         socket.emit('player', obj); //state = findMerlin
     });
-    //--------------findMerlin state--------------//
-    //--------------mission state--------------//
+
+    //Mission State
     $('.mission').on('click', '#successButton', function() {
         $('.mission #successButton').css('display', 'none');
         $('.mission #failButton').css('display', 'none');
@@ -630,8 +679,8 @@ $(function() {
         socket.emit('player', obj); //state = mission
     });
 
-    //--------------mission state--------------//
-    //--------------vote state--------------//
+
+    //Vote State
     $('.vote').on('click', '#voteAgreeButton', function() {
         $('.vote').css('display', 'none');
         var obj = { type: 'vote', value: true ,room_id:room_id};
@@ -644,18 +693,18 @@ $(function() {
         socket.emit('player', obj); //state = vote
 
     });
-    //--------------vote state--------------//
-    //--------------sendMission state--------------//
+
+    //Send Mssion State
     $('#gameArea').on('click', '.member_check', function() {
         //window.alert('checked!!');
         if ($('.sendMission .member_check:checked').length > team_size) {
             window.alert('You can only choose ' + team_size + ' team members');
             $(this).attr('checked', false);
         }else if($('.sendMission .member_check:checked').length == team_size){
-            var inner_input = "<br><button id='memberDoneButton'>Done</button>";
+            var inner_input = "&nbsp;&nbsp;<button id='memberDoneButton'>Done</button>";
             $('#sendMissionInform').append(inner_input);
         }else{
-            var inner_input = "<span>Choose the team: (team size is " + team_size + ")</span><br>";
+            var inner_input = "<br>&nbsp;&nbsp;<span>Choose the team: (team size is " + team_size + ")</span><br>";
             $('#sendMissionInform').html(inner_input);
         }
 
@@ -667,6 +716,7 @@ $(function() {
         
         updateTeamMembers();
     });
+
     $('.sendMission').on('click', '#memberDoneButton', function() {
             if ($('.sendMission .member_check:checked').length < team_size) {
                 window.alert("You have to choose " + team_size + ' team members');
@@ -677,59 +727,67 @@ $(function() {
                 socket.emit('player', obj); //state = sendMission
             }
         })
-        //--------------sendMission state--------------//
-        //--------------randomCharacters state--------------//
-    $('.randomCharacters .good_check').click(function() {
+
+    //random Role State
+    $('.randomRole .good_check').click(function() {
+        //Alert if some good role are select and not select
         if ($(this).val() == 'Merlin' && !$(this).is(":checked")) {
             window.alert('Merlin should always be included');
             $(this).attr('checked', true);
         }
-        if ($('.randomCharacters .good_check:checked').length > max_good) {
+        if ($('.randomRole .good_check:checked').length > max_good) {
             window.alert('You can only choose ' + max_good + ' good characters');
             $(this).attr('checked', false);
-        }else if($(this).val() == 'Percival' && $(this).is(":checked")){
-            $('.randomCharacters #Morgana').attr('checked', true);
-            if($('.randomCharacters .evil_check:checked').length > max_evil){
+        }
+        else if($(this).val() == 'Percival' && $(this).is(":checked")){
+            $('.randomRole #Morgana').attr('checked', true);
+            if($('.randomRole .evil_check:checked').length > max_evil){
                 window.alert('Percival and Morgana are a pair, please uncheck one evil character');
                 $(this).attr('checked',false);
-                $('.randomCharacters #Morgana').attr('checked', false);
+                $('.randomRole #Morgana').attr('checked', false);
             }
-        }else if($(this).val() == 'Percival' && !$(this).is(":checked")){
-            $('.randomCharacters #Morgana').attr('checked', false);
         }
-        updateCharactersSet();
+        else if($(this).val() == 'Percival' && !$(this).is(":checked")){
+            $('.randomRole #Morgana').attr('checked', false);
+        }
+        updateRolesSet();
     });
-    $('.randomCharacters .evil_check').click(function() {
+
+    //Alert if some good role are select and not select
+    $('.randomRole .evil_check').click(function() {
         if ($(this).val() == 'Assassin' && !$(this).is(":checked")) {
             window.alert('Assassin should always be included');
             $(this).attr('checked', true);
         }
-        if ($('.randomCharacters .evil_check:checked').length > max_evil) {
+        if ($('.randomRole .evil_check:checked').length > max_evil) {
             window.alert('You can only choose ' + max_evil + ' evil characters');
             $(this).attr('checked', false);
-        }else if($(this).val() == 'Morgana' && $(this).is(":checked")){
-            $('.randomCharacters #Percival').attr('checked', true);
-            if($('.randomCharacters .good_check:checked').length > max_good){
+        }
+        else if($(this).val() == 'Morgana' && $(this).is(":checked")){
+            $('.randomRole #Percival').attr('checked', true);
+            if($('.randomRole .good_check:checked').length > max_good){
                 window.alert('Percival and Morgana are a pair, please uncheck one good character');
                 $(this).attr('checked',false);
-                $('.randomCharacters #Percival').attr('checked', false);
+                $('.randomRole #Percival').attr('checked', false);
             }
-        }else if($(this).val() == 'Morgana' && !$(this).is(":checked")){
-            $('.randomCharacters #Percival').attr('checked', false);
         }
-        updateCharactersSet();
+        else if($(this).val() == 'Morgana' && !$(this).is(":checked")){
+            $('.randomRole #Percival').attr('checked', false);
+        }
+        updateRolesSet();
     });
-    $('.randomCharacters #charactersDoneButton').click(function() {
+
+    //When all role are select and press done
+    $('.randomRole #charactersDoneButton').click(function() {
         //window.alert('clicked');
         var obj = { type: 'ready' ,room_id:room_id};
         obj['good_characters'] = good_characters;
         obj['evil_characters'] = evil_characters;
-        socket.emit('player', obj); //state = randomCharacters
+        socket.emit('player', obj); //state = randomRole
     });
-    //--------------randomCharacters state--------------//
 
 
-    //--------------wait state--------------//
+    //Wait State, waiting for player to press play
     $('.wait #playButton').click(function() {
         if ($('.wait #playButton').html() == 'play') {
             $('.wait #playButton').html('not yet');
@@ -749,7 +807,8 @@ $(function() {
         }
 
     });
-    //--------------wait state--------------//
+
+    //Enter pressed
     input.keydown(function(e) {
         if (e.keyCode === 13) {
             var msg = $(this).val();
@@ -758,6 +817,16 @@ $(function() {
             $(this).val('');
         }
     });
+
+    $('.findRoom').on('keydown', '#roomInput',function(e) {
+        if(e.KeyCode === 13||e.which===13){
+            var msg = $(this).val();
+            if(!msg) return;
+            socket.emit('createRoom', {name:msg,room_id:room_id});
+            $(this).val('');
+        }
+    });
+
     $('#nameInput').keydown(function(e) {
         if (e.keyCode === 13) {
             var msg = $(this).val();
@@ -772,19 +841,10 @@ $(function() {
             }
         }
     });
-    $('.findRoom').on('keydown', '#roomInput',function(e) {
-        if(e.KeyCode === 13||e.which===13){
-            var msg = $(this).val();
-            if(!msg) return;
-            socket.emit('createRoom', {name:msg,room_id:room_id});
-            $(this).val('');
-        }
-    });
+
     $('.findRoom').on('click', '.roomJoin', function(){
         //alert($(this).val());
         socket.emit('joinRoom', {room_id:$(this).val()});
     });
 });
-//--------------Button or Input or Others--------------//
-//--------------All states are same--------------//
-//----------------------------------------------------------------------
+
