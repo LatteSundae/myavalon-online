@@ -57,7 +57,7 @@ $(function() {
             $('.findRoom').css('display','none');
             $('.room').css('display','initial');
             $('#connectStatus').text('\xa0\xa0\xa0\xa0\xa0Pick a name:');
-            $('#title').html('&nbsp;&nbsp;Avalon Online <br> &nbsp;&nbsp;Room Name: ' + json.room_name);
+            $('#title').html('&nbsp;&nbsp;Avalon Online <br> &nbsp;&nbsp;<style="font-size: 200%;">Room Name: ' + json.room_name);
         }
     });
 
