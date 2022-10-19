@@ -197,7 +197,7 @@ div {width:500px;}
     border-width: 5px; 
     padding: 20px; 
     margin: 35px auto;
-    display:initial;
+    display:block;
 }
 img {
     border-radius: 50%;
@@ -326,4 +326,10 @@ width: 34px;
 
 .cnt223 .x:hover{
 cursor: pointer;
+}
+
+a{
+    display: block;
+    width: 113px;
+    margin: auto; 
 }
