@@ -189,8 +189,15 @@ div {width:500px;}
     display:none;
 }
 .setName{
-    display:initial;
+    color: black;
+    border-radius: 25px; 
+    background-color: #ecc29b; 
+    border-style: solid; 
+    border-color: silver; 
+    border-width: 5px; 
+    padding: 20px; 
     margin: 1px auto;
+    display:initial;
 }
 img {
     border-radius: 50%;
