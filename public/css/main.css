@@ -26,10 +26,6 @@ body{
     left:0;
     right:0;
 }
-h1 { 
-    font-size: 400%; 
-    text-align: center;
-}
 
 p {line-height:18px;padding:2px; }
 div {width:500px;}
