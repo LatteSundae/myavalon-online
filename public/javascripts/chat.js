@@ -37,7 +37,7 @@ var content_height = 0;
 
 //----------------------------------------------------------------------//
 
-$(function() { //$(document).ready(function() { ... }); it means that when document ready, run the function
+$(function() {
     var content = $('#content'); //like document.getelementbyid
     var status = $('#status');
     var input = $('#input');
