@@ -246,7 +246,7 @@ img {
 }
 
 .avalonplayer{
-    width: 500px;
+    width: 600px;
     height: 150px;
     background-image: url(img/avalon\ player.png);
     background-repeat: no-repeat;
@@ -285,7 +285,7 @@ z-index: 101;
 min-width: 600px;
 width: 600px;
 min-height: 150px;
-max-height: 800px;
+max-height: 700px;
 margin: 100px auto;
 background: #f3f3f3;
 position: relative;
