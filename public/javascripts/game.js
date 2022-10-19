@@ -27,8 +27,8 @@ var two_fail = false;
 //Role set
 var max_good = 0;
 var max_evil = 0;
-var good_characters = [];
-var evil_characters = [];
+var good_roles = [];
+var evil_roles = [];
 
 var content_height = 0;
 
@@ -127,13 +127,13 @@ $(function() {
                 //Random Role State
                 case "randomRole":
                     $('.randomRole').css('display', 'none');
-                    if (json.type == 'chooseCharactersSet') {
-                        //show choose character form for room owner
+                    if (json.type == 'chooserolesSet') {
+                        //show choose role form for room owner
     
                         last_player_data=null;
                         if (room_owner_id == player_id) {
                             $('.randomRole').css('display', 'initial');
-                            $('.randomRole #charactersInformation').html('&nbsp;&nbsp;There are ' + json.good + ' good and ' + json.evil + ' evil.<br>&nbsp;&nbsp;Choose characters you want to add:<br>&nbsp;&nbsp;Percival and Morgana are a pair<br>');
+                            $('.randomRole #rolesInformation').html('&nbsp;&nbsp;There are ' + json.good + ' good and ' + json.evil + ' evil.<br>&nbsp;&nbsp;Choose roles you want to add:<br>&nbsp;&nbsp;Percival and Morgana are a pair<br>');
     
                             max_good = json.good;
                             max_evil = json.evil;
@@ -360,7 +360,7 @@ $(function() {
                     }
                     inner_li += '</td>';
     
-                    inner_li += '<td style="width:5px;">' + (json.playerData[i].id+1) + '</td><td style="width:80px;">' + json.playerData[i].name + "hgjhgj" + '</td>';
+                    inner_li += '<td style="width:5px;">' + (json.playerData[i].id+1) + '</td><td style="width:80px;">' + json.playerData[i].name + '</td>';
     
                     inner_li += '<td style="width:10px;">';
                     if (json.playerData[i].vote == true) {
@@ -582,14 +582,14 @@ $(function() {
     //Put selected role to the list
     var updateRolesSet = function() {
         $('.randomRole').css('display', 'initial');
-        good_characters = [];
-        evil_characters = [];
-        if ($('.randomRole #Merlin').is(":checked")) good_characters.push("Merlin");
-        if ($('.randomRole #Percival').is(":checked")) good_characters.push("Percival");
-        if ($('.randomRole #Morgana').is(":checked")) evil_characters.push("Morgana");
-        if ($('.randomRole #Assassin').is(":checked")) evil_characters.push("Assassin");
-        if ($('.randomRole #Mordred').is(":checked")) evil_characters.push("Mordred");
-        if ($('.randomRole #Oberon').is(":checked")) evil_characters.push("Oberon");
+        good_roles = [];
+        evil_roles = [];
+        if ($('.randomRole #Merlin').is(":checked")) good_roles.push("Merlin");
+        if ($('.randomRole #Percival').is(":checked")) good_roles.push("Percival");
+        if ($('.randomRole #Morgana').is(":checked")) evil_roles.push("Morgana");
+        if ($('.randomRole #Assassin').is(":checked")) evil_roles.push("Assassin");
+        if ($('.randomRole #Mordred').is(":checked")) evil_roles.push("Mordred");
+        if ($('.randomRole #Oberon').is(":checked")) evil_roles.push("Oberon");
 
     };
 
@@ -737,13 +737,13 @@ $(function() {
             $(this).attr('checked', true);
         }
         if ($('.randomRole .good_check:checked').length > max_good) {
-            window.alert('You can only choose ' + max_good + ' good characters');
+            window.alert('You can only choose ' + max_good + ' good roles');
             $(this).attr('checked', false);
         }
         else if($(this).val() == 'Percival' && $(this).is(":checked")){
             $('.randomRole #Morgana').attr('checked', true);
             if($('.randomRole .evil_check:checked').length > max_evil){
-                window.alert('Percival and Morgana are a pair, please uncheck one evil character');
+                window.alert('Percival and Morgana are a pair, please uncheck one evil role');
                 $(this).attr('checked',false);
                 $('.randomRole #Morgana').attr('checked', false);
             }
@@ -761,13 +761,13 @@ $(function() {
             $(this).attr('checked', true);
         }
         if ($('.randomRole .evil_check:checked').length > max_evil) {
-            window.alert('You can only choose ' + max_evil + ' evil characters');
+            window.alert('You can only choose ' + max_evil + ' evil roles');
             $(this).attr('checked', false);
         }
         else if($(this).val() == 'Morgana' && $(this).is(":checked")){
             $('.randomRole #Percival').attr('checked', true);
             if($('.randomRole .good_check:checked').length > max_good){
-                window.alert('Percival and Morgana are a pair, please uncheck one good character');
+                window.alert('Percival and Morgana are a pair, please uncheck one good role');
                 $(this).attr('checked',false);
                 $('.randomRole #Percival').attr('checked', false);
             }
@@ -779,11 +779,11 @@ $(function() {
     });
 
     //When all role are select and press done
-    $('.randomRole #charactersDoneButton').click(function() {
+    $('.randomRole #rolesDoneButton').click(function() {
         //window.alert('clicked');
         var obj = { type: 'ready' ,room_id:room_id};
-        obj['good_characters'] = good_characters;
-        obj['evil_characters'] = evil_characters;
+        obj['good_roles'] = good_roles;
+        obj['evil_roles'] = evil_roles;
         socket.emit('player', obj); //state = randomRole
     });
 

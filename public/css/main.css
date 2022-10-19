@@ -150,16 +150,16 @@ div {width:500px;}
 #stateDisplay{
 
 }
-#charactersForm{
+#rolesForm{
     display:none;
 }
-#charactersInformation{
+#rolesInformation{
 
 }
 .wait{
     display:initial;
 }
-.randomCharacters{
+.randomroles{
     display:none;
 }
 .allStates{

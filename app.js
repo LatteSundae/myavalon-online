@@ -5,7 +5,7 @@ var states = ["wait","randomRole","sendMission","vote","mission",
 
 //Set Game Rule
 //Count of Good Side and Evil Side
-var good_evil_count = [[3,2],[4,2],[4,3],[5,3],[6,3],[6,4]]; //good characters numbers and evil characters numbers
+var good_evil_count = [[3,2],[4,2],[4,3],[5,3],[6,3],[6,4]]; //good roles numbers and evil roles numbers
 //number of team members for every Mission (5 players to 10 players), true/false means the 4th turn, need two failure or not
 var team_assignment = [[[2,3,2,3,3],false],[[2,3,4,3,4],false],[[2,3,3,4,4],true],[[3,4,4,5,5],true],[[3,4,4,5,5],true],[[3,4,4,5,5],true]]; //rule
 
@@ -60,11 +60,11 @@ io.sockets.on('connection', function (socket) {
       vote_success : 0, //number of agreement
       vote_fail : 0, //number of disagreement
       
-      //for characters setting
-      max_good : 0, //maximum number of good characters
-      max_evil : 0, //maximum number of evil characters
-      good_characters : [], //list all good characters 
-      evil_characters : [], //list all evil characters
+      //for roles setting
+      max_good : 0, //maximum number of good roles
+      max_evil : 0, //maximum number of evil roles
+      good_roles : [], //list all good roles 
+      evil_roles : [], //list all evil roles
       all_role : [], //all role
       
       //for mission sending (number of ppl of team & the 4th mission need 2 fail or not)
@@ -73,7 +73,7 @@ io.sockets.on('connection', function (socket) {
       state : states[0], //initial states
       
       //player information
-      player_data : [], //id, name, role[special character, evil/good], ready, color, teammembers
+      player_data : [], //id, name, role[special role, evil/good], ready, color, teammembers
       player_id : 0, //for creating unique id
       room_owner_id : null, //room owner
       leader_id : null //leader to choose members
@@ -155,7 +155,7 @@ io.sockets.on('connection', function (socket) {
             //tell player to change state
             changeState(states[1]);
             setGoodEvil();
-            askCharactersSet();
+            askrolesSet();
           }
   
           break;
@@ -163,12 +163,12 @@ io.sockets.on('connection', function (socket) {
         //Random Role State
         case "randomRole":
           if(json.type=='ready'){
-            room_list[player.room_id].good_characters = json.good_characters;
-            room_list[player.room_id].evil_characters = json.evil_characters;
-            console.log(player.name + ' ('+player.id+')(room owner) done characters choosing');
+            room_list[player.room_id].good_roles = json.good_roles;
+            room_list[player.room_id].evil_roles = json.evil_roles;
+            console.log(player.name + ' ('+player.id+')(room owner) done roles choosing');
   
-            //random characters to players
-            randomSetCharacters();
+            //random roles to players
+            randomSetroles();
             
             changeState(states[2]);
   
@@ -348,8 +348,8 @@ io.sockets.on('connection', function (socket) {
     room_list[player.room_id].fail_time = 0;
     room_list[player.room_id].max_good = 0;
     room_list[player.room_id].max_evil = 0;
-    room_list[player.room_id].good_characters = [];
-    room_list[player.room_id].evil_characters = [];
+    room_list[player.room_id].good_roles = [];
+    room_list[player.room_id].evil_roles = [];
     room_list[player.room_id].all_role = [];
     room_list[player.room_id].team_members = [];
     room_list[player.room_id].state = states[0];
@@ -444,7 +444,7 @@ io.sockets.on('connection', function (socket) {
 
 
     //add this player into player data
-    var one_player_data = {id:room_list[player.room_id].player_id,name:player.name,role:null,ready:false,vote:null,color:player.color,teammembers:false}; //id & name & character & ready
+    var one_player_data = {id:room_list[player.room_id].player_id,name:player.name,role:null,ready:false,vote:null,color:player.color,teammembers:false}; //id & name & role & ready
     player.id = one_player_data['id'];
     player.index = room_list[player.room_id].player_data.length;
     room_list[player.room_id].player_data.push(one_player_data);
@@ -477,10 +477,10 @@ io.sockets.on('connection', function (socket) {
   };
   
   //clear last player data
-  var askCharactersSet=function(){
+  var askrolesSet=function(){
     updatePlayerList();
-    var ask = {type:'chooseCharactersSet',state:room_list[player.room_id].state,good:room_list[player.room_id].max_good,evil:room_list[player.room_id].max_evil,room_id:player.room_id};
-    if(show_emit) console.log('emit ask room owner '+player.name+' ('+player.id+') to set characters (one player)');
+    var ask = {type:'chooserolesSet',state:room_list[player.room_id].state,good:room_list[player.room_id].max_good,evil:room_list[player.room_id].max_evil,room_id:player.room_id};
+    if(show_emit) console.log('emit ask room owner '+player.name+' ('+player.id+') to set roles (one player)');
     socket.emit('system',ask);
     socket.broadcast.emit('system',ask);
     
@@ -507,23 +507,23 @@ io.sockets.on('connection', function (socket) {
   };
 
   //Random Role State
-  var randomSetCharacters=function(){
-    while(room_list[player.room_id].good_characters.length<room_list[player.room_id].max_good){
-      room_list[player.room_id].good_characters.push('Good Slave');
+  var randomSetroles=function(){
+    while(room_list[player.room_id].good_roles.length<room_list[player.room_id].max_good){
+      room_list[player.room_id].good_roles.push('Good Slave');
     }
 
     //insert good role to all role
-    for(i=0;i<room_list[player.room_id].good_characters.length;i++){
-      room_list[player.room_id].all_role.push([room_list[player.room_id].good_characters[i],'Good']);
+    for(i=0;i<room_list[player.room_id].good_roles.length;i++){
+      room_list[player.room_id].all_role.push([room_list[player.room_id].good_roles[i],'Good']);
     }
 
-    while(room_list[player.room_id].evil_characters.length<room_list[player.room_id].max_evil){
-      room_list[player.room_id].evil_characters.push('Evil Minion');
+    while(room_list[player.room_id].evil_roles.length<room_list[player.room_id].max_evil){
+      room_list[player.room_id].evil_roles.push('Evil Minion');
     }
 
     //insert evil role to all role
-    for(i=0;i<room_list[player.room_id].evil_characters.length;i++){
-      room_list[player.room_id].all_role.push([room_list[player.room_id].evil_characters[i],'Evil']);
+    for(i=0;i<room_list[player.room_id].evil_roles.length;i++){
+      room_list[player.room_id].all_role.push([room_list[player.room_id].evil_roles[i],'Evil']);
     }
 
     //Shuffle and Assign Role to player
