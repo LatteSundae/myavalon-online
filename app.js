@@ -1,28 +1,25 @@
-//----------------------------------------------------------------------//
-//public information for avalon game
-//-----game states-----//
-var states = ["wait","randomCharacters","sendMission","vote","mission",
-  "missionSuccess","missionFail","update","findMerlin","evilWin","goodWin"]; //all states needed
 
-//-----game rules-----//
-//index+5 players (0->5 1->6... 5->10)
+//Game State Array
+var states = ["wait","randomRole","sendMission","vote","mission",
+  "missionSuccess","missionFail","update","findMerlin","evilWin","goodWin"]; 
+
+//Set Game Rule
+//Count of Good Side and Evil Side
 var good_evil_count = [[3,2],[4,2],[4,3],[5,3],[6,3],[6,4]]; //good characters numbers and evil characters numbers
-//number of team members for every turn (5 players to 10 players), true/false means the 4th turn, need two failure or not
+//number of team members for every Mission (5 players to 10 players), true/false means the 4th turn, need two failure or not
 var team_assignment = [[[2,3,2,3,3],false],[[2,3,4,3,4],false],[[2,3,3,4,4],true],[[3,4,4,5,5],true],[[3,4,4,5,5],true],[[3,4,4,5,5],true]]; //rule
 
-//-----room data-----//
-//key : value = key : room class
-var room_list = {}; //key & room class (hashmap)
-var room_id = 0; //for creating unique room id
+//Room data
+var room_list = {}; //List of Available Roo,
+var room_id = 0; //Creating unique room id
 
-//-----for debug-----//
-//console log every emit action
+//For debug
+//emit = send a message to all the connected players
 var show_emit = false;
-//----------------------------------------------------------------------//
 
 
-//----------------------------------------------------------------------//
-//引入程序包
+
+
 var express = require('express')
   , path = require('path')
   , app = express()
@@ -30,40 +27,33 @@ var express = require('express')
 
 var io = require('socket.io').listen(server);
 
-//设置日志级别
+//0 - error, 1 - warn, 2 - info, 3 - debug
 io.set('log level', 1); 
-//----------------------------------------------------------------------//
 
 
-
-//----------------------------------------------------------------------//
 //gameplay programming here!!
 //WebSocket listening
 io.sockets.on('connection', function (socket) {
-  if(show_emit) console.log('emit socket open (one client)');
-  socket.emit('open',{room_list:room_list,room_id:null});//client is connect, not in a room yet
-  // 打印握手信息
-  // console.log(socket.handshake);
+  if(show_emit) console.log('emit socket open (one player)');
+  socket.emit('open',{room_list:room_list,room_id:null});//player is connect, not in a room yet
 
-  // client class
-  var client = {
+  // player class
+  var player = {
     socket:socket,
     name:false,
     color:getColor(),
     id:null, //same as player_data[index]['id']
-    room_id:null //to check which room the client is in
+    room_id:null //to check which room the player is in
   };
 
-//--------------All states are different--------------//
+//States
   socket.on('createRoom', function(json){
-    //client create a room
+    //player create a room
     console.log('create new room');
+    //room class
     var room = {
-      //room class
       room_name : "",
-      //game options
-      //game necessary count / set
-      turn : 0, //mission turn
+      turn : 0, //mission turn count
       success_time : 0, //total success time
       fail_time : 0, //total fail time
       vote_turn : 0, //voting turn
@@ -73,9 +63,9 @@ io.sockets.on('connection', function (socket) {
       //for characters setting
       max_good : 0, //maximum number of good characters
       max_evil : 0, //maximum number of evil characters
-      good_characters : [], //all good characters 
-      evil_characters : [], //all evil characters
-      all_characters : [], //all characters
+      good_characters : [], //list all good characters 
+      evil_characters : [], //list all evil characters
+      all_role : [], //all role
       
       //for mission sending (number of ppl of team & the 4th mission need 2 fail or not)
       team_members : [], //team members to do the mission
@@ -88,45 +78,47 @@ io.sockets.on('connection', function (socket) {
       room_owner_id : null, //room owner
       leader_id : null //leader to choose members
     };
+
     //add new room in room list
-    room_list[room_id]=room;
+    room_list[room_id] = room;
 
     //set the room's name
     room_list[room_id].room_name = json.name;
 
-    //update client's room id, so this client know which room it is in
-    client.room_id=room_id;
+    //update player's room id, so this player know which room it is in
+    player.room_id=room_id;
 
-    //send client room data
+    //send player room data
     sendRoomData();
 
     room_id++;//for create unique room id
   });
 
-
+  //player join a room
   socket.on('joinRoom', function(json){
-    //client join a room
-
-    //update client's room id, so this client know which room it is in
-    client.room_id=json.room_id;
-
-    //send client room data
+    //update player's room id, so this player know which room it is in
+    player.room_id=json.room_id;
+    //send player room data
     sendRoomData();
   });
 
   socket.on('player', function(json){
-    if(client.room_id==null){
-      console.log("this client is still not in any room!");
-    }else if(client.room_id in room_list){
-      console.log("state : "+room_list[client.room_id].state);
-      switch(room_list[client.room_id].state){
+    //if player not in any room
+    if(player.room_id==null){
+      console.log("this player is still not in any room!");
+    }
+    
+    //if player is in one of the room
+    else if(player.room_id in room_list){
+      console.log("state : "+room_list[player.room_id].state);
+      switch(room_list[player.room_id].state){
         case "wait":
           if(json.type=='setName'){
             //player login
-            if(room_list[client.room_id].player_data.length>=0&&room_list[client.room_id].player_data.length<10){
+            if(room_list[player.room_id].player_data.length>=0&&room_list[player.room_id].player_data.length<10){
               //insert player into player_data
               insertPlayerData(json.name);
-              console.log("player "+client.name+" ("+client.id+") login");
+              console.log("player "+player.name+" ("+player.id+") login");
               //update player list
               updatePlayerList();
               //update ready state
@@ -137,9 +129,11 @@ io.sockets.on('connection', function (socket) {
             }else{
               console.log("player login failed (server is full)");
               //the server is full!
-              var obj = {state:room_list[client.room_id].state, type:'full',room_id:client.room_id};
+              var obj = {state:room_list[player.room_id].state, type:'full',room_id:player.room_id};
               obj['text']='Sorry, the server is full';
-              if(show_emit) console.log("emit server full (one client)");
+              if(show_emit){
+                console.log("emit server full (one player)");
+              }
               socket.emit('system',obj);
               //update player list
               updatePlayerList();
@@ -148,28 +142,30 @@ io.sockets.on('connection', function (socket) {
               
             }
           }else if(json.type=='readyButton'){
-            console.log(client.name+" ("+client.id+") ready");
-            //client press ready or not yet
+            console.log(player.name+" ("+player.id+") ready");
+            //player press ready or not yet
             updateReadyState(json.value);
             //update player list
             updatePlayerList();
             //update ready state
             updateAllReadyState();
           }else if(json.type=='playButton'){
-            console.log(client.name+ " ("+client.id+")(room owner) press start game");
+            console.log(player.name+ " ("+player.id+")(room owner) press start game");
             //room owner press play!
-            //tell client to change state
+            //tell player to change state
             changeState(states[1]);
             setGoodEvil();
             askCharactersSet();
           }
   
           break;
-        case "randomCharacters":
+
+        //Random Role State
+        case "randomRole":
           if(json.type=='ready'){
-            room_list[client.room_id].good_characters = json.good_characters;
-            room_list[client.room_id].evil_characters = json.evil_characters;
-            console.log(client.name + ' ('+client.id+')(room owner) done characters choosing');
+            room_list[player.room_id].good_characters = json.good_characters;
+            room_list[player.room_id].evil_characters = json.evil_characters;
+            console.log(player.name + ' ('+player.id+')(room owner) done characters choosing');
   
             //random characters to players
             randomSetCharacters();
@@ -180,56 +176,19 @@ io.sockets.on('connection', function (socket) {
   
           }
           break;
-        case "sendMission":
-          if(json.type=='ready'){
-            room_list[client.room_id].team_members = json.team_members;
-            console.log(client.name+' ('+client.id+')done team members choosing');
-  
-            resetVote();
-            if(room_list[client.room_id].vote_turn==4){
-              //no need to vote
-              console.log("5th team members setting, no need to vote");
-              room_list[client.room_id].vote_turn = 0;
-              changeState(states[4]);
-              missionVote();
-              updatePlayerList();
-              updateTeamMemberList();
-            }else{
-              console.log("voting for team members");
-              changeState(states[3]);
-              voting();
-            }
-          }else if(json.type=='update'){
-            //update if teammembers or not
-            for(i=0;i<room_list[client.room_id].player_data.length;i++){
-              if(room_list[client.room_id].player_data[i]['id']==json.id){
-                room_list[client.room_id].player_data[i]['teammembers']=json.value;            }
-            }
-            updateTeamMemberList();
-  
-          }
-          break;
+
+        //Voting State 
         case "vote":
-            if(json.type=='vote'){
-              console.log("(vote)"+client.name+" ("+client.id +") : "+ json.value);
-              updateVote(json.value);
-            }
+          if(json.type=='vote'){
+            console.log("(vote)"+player.name+" ("+player.id +") : "+ json.value);
+            updateVote(json.value);
+          }          
           break;
-        case "mission":
-            if(json.type=='vote'){
-              console.log("(mission)"+client.name+" ("+client.id +") : "+ json.value);
-              updateMissionVote(json.value);
-            }
-          break;
-        case "missionSuccess":
-          break;
-        case "missionFail":
-          break;
-        case "update":
-          break;
+
+        //Assassin try assassinating Merlin Role State 
         case "findMerlin":
           if(json.type=='find'){
-            console.log(client.name+' ('+client.id + ") think " + json.value + " is Merlin");
+            console.log(player.name+' ('+player.id + ") think " + json.value + " is Merlin");
             var find=false;
             var new_state;
   
@@ -251,364 +210,435 @@ io.sockets.on('connection', function (socket) {
             updatePlayerList();
           }
           break;
+
+        //Vote to send Team Members on Mission  
+        case "sendMission":
+          if(json.type=='ready'){
+            room_list[player.room_id].team_members = json.team_members;
+            console.log(player.name+' ('+player.id+')done team members choosing');
+  
+            resetVote();
+            if(room_list[player.room_id].vote_turn==4){
+              //no need to vote
+              console.log("5th team members setting, no need to vote");
+              room_list[player.room_id].vote_turn = 0;
+              changeState(states[4]);
+              missionVote();
+              updatePlayerList();
+              updateTeamMemberList();
+            }else{
+              console.log("voting for team members");
+              changeState(states[3]);
+              voting();
+            }
+          }
+          //update if teammembers or not
+          else if(json.type=='update'){
+            
+            for(i=0;i<room_list[player.room_id].player_data.length;i++){
+              if(room_list[player.room_id].player_data[i]['id']==json.id){
+                room_list[player.room_id].player_data[i]['teammembers']=json.value;            }
+            }
+            updateTeamMemberList();
+  
+          }
+          break;
+
+        //Mssion State
+        case "mission":
+            if(json.type=='vote'){
+              console.log("(mission)"+player.name+" ("+player.id +") : "+ json.value);
+              updateMissionVote(json.value);
+            }
+          break;
+
+        //Mssion Success
+        case "missionSuccess":
+          console.log("Mission Success");
+          break;
+
+        //Mssion Fail
+        case "missionFail":
+          console.log("Mission Failed");
+          break;
+
+        case "update":
+          break;
+        
         default:
           break;
       }
     }else{
-      if(show_emit) console.log("emit exit the room, and room list (one client)");
-      socket.emit('system',{type:'exitRoom',room_id:client.room_id,room_list:room_list});
+      if(show_emit) console.log("emit exit the room, and room list (one player)");
+      socket.emit('system',{type:'exitRoom',room_id:player.room_id,room_list:room_list});
     }
 
   });
-  
-
-//--------------All states are different--------------//
 
 
 
-//--------------All states are same--------------//
-    
-  //对message事件的监听 only for chatting
+  //Chatting in Avalon Online
   socket.on('message', function(json){
-    if(client.room_id in room_list){
-      var obj = {time:getTime(),color:client.color,room_id:client.room_id};
-      //如果不是第一次的连接，正常的聊天消息
-      obj['text']=json.msg;
-      obj['author']=client.name;      
+    if(player.room_id in room_list){
+      var obj = {time:getTime(),color:player.color,room_id:player.room_id}; //get time, player colors, room id
+      obj['text']=json.msg; 
+      obj['author']=player.name; //player name
       obj['type']='message';
-      //console.log(client.name + ' say: ' + msg);
-      // 返回消息（可以省略）
+
       socket.emit('message',obj);
-      // 广播向其他用户发消息
       socket.broadcast.emit('message',obj);
     }
   });
 
-
-  //监听出退事件
+  //If player get disconnected
   socket.on('disconnect', function () {  
     var obj = {
       time:getTime(),
-      color:client.color,
+      color:player.color,
       author:'System',
-      text:client.name,
+      text:player.name,
       type:'disconnect',
-      room_id:client.room_id
+      room_id:player.room_id
     };
-    // 广播用户已退出
-    //remove this player from player_data
-    if(client.room_id!=null && client.room_id in room_list) {
+    //remove this disconnected from player_data
+    if(player.room_id!=null && player.room_id in room_list) {
       removePlayer();
-      if(show_emit) console.log('emit client disconnect (all clients)');
+      if(show_emit) console.log('emit player disconnect (all players)');
       socket.broadcast.emit('system',obj);
-      console.log(client.name + '(' + client.id+ ') Disconnect');
+      console.log(player.name + '(' + player.id+ ') Disconnect');
       //console.log('total player number: '+player_data.length);
-  
-  
-      if(room_list[client.room_id].state != "wait"){
+
+      //If number of player less than 5 player, hide ready button
+      if(room_list[player.room_id].player_data.length<5){
+        //set all ready to false
+        if(show_emit) console.log("emit hide ready (all players)");
+        socket.emit('system',{state:room_list[player.room_id].state,type:'hideReady',room_id:player.room_id});
+        socket.broadcast.emit('system',{state:room_list[player.room_id].state,type:'hideReady',room_id:player.room_id});
+        resetPlayerData();
+      }
+
+      //If player disconnect during game time, reset game
+      if(room_list[player.room_id].state != "wait"){
         resetPlayerData();
         changeState(states[0]);
       }
-      if(room_list[client.room_id].player_data.length<5){
-        //set all ready to false
-        if(show_emit) console.log("emit hide ready (all clients)");
-        socket.emit('system',{state:room_list[client.room_id].state,type:'hideReady',room_id:client.room_id});
-        socket.broadcast.emit('system',{state:room_list[client.room_id].state,type:'hideReady',room_id:client.room_id});
-        resetPlayerData();
-      }
-      //console.log(player_data);
+
       init();
       //update player list
       updatePlayerList();
       //update ready state
       updateAllReadyState();
 
-      if(room_list[client.room_id].player_data.length==0){
-        delete room_list[client.room_id];
+      if(room_list[player.room_id].player_data.length==0){
+        delete room_list[player.room_id];
       }
-      client.room_id = null;
+      player.room_id = null;
       updateRoomList();
     }
   });
-//--------------All states are same--------------//
-//--------------Function to use here--------------//
-//--------------All states--------------//
+
+
+//Functions
+  //initial all
   var init=function(){
-    //initial
-    room_list[client.room_id].leader_id = null;
-    room_list[client.room_id].turn = 0;
-    room_list[client.room_id].vote_turn = 0;
-    room_list[client.room_id].success_time = 0;
-    room_list[client.room_id].fail_time = 0;
-    room_list[client.room_id].max_good = 0;
-    room_list[client.room_id].max_evil = 0;
-    room_list[client.room_id].good_characters = [];
-    room_list[client.room_id].evil_characters = [];
-    room_list[client.room_id].all_characters = [];
-    room_list[client.room_id].team_members = [];
-    room_list[client.room_id].state = states[0];
-    room_list[client.room_id].vote_fail = 0;
-    room_list[client.room_id].vote_success = 0;
+    room_list[player.room_id].leader_id = null;
+    room_list[player.room_id].turn = 0;
+    room_list[player.room_id].vote_turn = 0;
+    room_list[player.room_id].success_time = 0;
+    room_list[player.room_id].fail_time = 0;
+    room_list[player.room_id].max_good = 0;
+    room_list[player.room_id].max_evil = 0;
+    room_list[player.room_id].good_characters = [];
+    room_list[player.room_id].evil_characters = [];
+    room_list[player.room_id].all_role = [];
+    room_list[player.room_id].team_members = [];
+    room_list[player.room_id].state = states[0];
+    room_list[player.room_id].vote_fail = 0;
+    room_list[player.room_id].vote_success = 0;
     resetVote();
     resetPlayerData();
     updateAllReadyState();
   };
-  var removePlayer=function(){
-    //remove player from player list
-    for(i=0;i<room_list[client.room_id].player_data.length;i++){
-      if(client.id==room_list[client.room_id].player_data[i]['id']){
-        room_list[client.room_id].player_data.splice(i,1);
-      }
-    }
-    //if the room owner disconnect, set new room owner
-    if(client.id==room_list[client.room_id].room_owner_id && room_list[client.room_id].player_data.length>0)
-      room_list[client.room_id].room_owner_id = room_list[client.room_id].player_data[0]['id'];
-    else if(client.id==room_list[client.room_id].room_owner_id && room_list[client.room_id].player_data.length==0)
-      room_list[client.room_id].room_owner_id = null;
-  }
+
+
+
+  //update player list
   var updatePlayerList=function(){
-    //update player list
-    updateObj={state:room_list[client.room_id].state,type:'playerList',room_owner_id:room_list[client.room_id].room_owner_id,room_id:client.room_id};
-    updateObj['playerData']=room_list[client.room_id].player_data;
-    //console.log(updateObj);
-    if(show_emit) console.log("emit new player data (all clients)");
+    updateObj={state:room_list[player.room_id].state,type:'playerList',room_owner_id:room_list[player.room_id].room_owner_id,room_id:player.room_id};
+    updateObj['playerData']=room_list[player.room_id].player_data;
+    if(show_emit) console.log("emit new player data (all players)");
     socket.emit('system',updateObj);
     socket.broadcast.emit('system',updateObj);
   };
 
-  var changeState=function(new_state){
-    room_list[client.room_id].state = new_state;
-    if(show_emit) console.log("emit new state : "+room_list[client.room_id].state+" (all clients)");
-    socket.emit('system',{state:room_list[client.room_id].state,type:'changeState',room_id:client.room_id});
-    socket.broadcast.emit('system',{state:room_list[client.room_id].state,type:'changeState',room_id:client.room_id});
-    //update room list
-    updateRoomList();
-  };
-  var resetPlayerData=function(){
-    for(i=0;i<room_list[client.room_id].player_data.length;i++){
-      room_list[client.room_id].player_data[i]['role']=null;
-      room_list[client.room_id].player_data[i]['ready']=false;
-      room_list[client.room_id].player_data[i]['vote']=null;
-      room_list[client.room_id].player_data[i]['teammembers']=false;
-    }
-  };
-  var sendRoomData=function(){
-    //send client room data
-    if(show_emit) console.log('emit the room data, client join the room (one client)');
-    socket.emit('open',{room_list:room_list,room_id:client.room_id, room_name:room_list[client.room_id].room_name}); 
-  };
+  //update room list
   var updateRoomList=function(){
-    //update room list
-    if(show_emit) console.log('emit update room, and room list (all clients)');
+    
+    if(show_emit) console.log('emit update room, and room list (all players)');
     socket.broadcast.emit('updateRoom',{room_list:room_list});
   };
-  var endGame=function(){
-    //send end game message to all clients in this room
-    if(show_emit) console.log("emit end game (all clients)");
-    socket.emit('system',{state:room_list[client.room_id].state,type:'endGame',last_player_data:room_list[client.room_id].player_data,room_id:client.room_id});
-    socket.broadcast.emit('system',{state:room_list[client.room_id].state,type:'endGame',last_player_data:room_list[client.room_id].player_data,room_id:client.room_id});            
-  }
-//--------------All states--------------//
-//--------------wait states--------------//
-  var insertPlayerData=function(name){
-    if(room_list[client.room_id].room_owner_id==null) room_list[client.room_id].room_owner_id = room_list[client.room_id].player_id;
-    //tell client they are join
-    if(show_emit) console.log("emit client is join (one client)");
-    socket.emit('system',{state:room_list[client.room_id].state,type:'join',value:true,player_id:room_list[client.room_id].player_id,room_owner_id:room_list[client.room_id].room_owner_id,room_id:client.room_id});
-    
-    client.name = name;
 
-    var obj = {time:getTime(),color:client.color,room_id:client.room_id};
-    obj['text']=client.name;
+  var changeState=function(new_state){
+    room_list[player.room_id].state = new_state;
+    if(show_emit) console.log("emit new state : "+room_list[player.room_id].state+" (all players)");
+    socket.emit('system',{state:room_list[player.room_id].state,type:'changeState',room_id:player.room_id});
+    socket.broadcast.emit('system',{state:room_list[player.room_id].state,type:'changeState',room_id:player.room_id});
+
+    //call function update room list
+    updateRoomList();
+  };
+
+  var resetPlayerData=function(){
+    for(i=0;i<room_list[player.room_id].player_data.length;i++){
+      room_list[player.room_id].player_data[i]['role']=null;
+      room_list[player.room_id].player_data[i]['ready']=false;
+      room_list[player.room_id].player_data[i]['vote']=null;
+      room_list[player.room_id].player_data[i]['teammembers']=false;
+    }
+  };
+
+  //send players room data
+  var sendRoomData=function(){
+    if(show_emit) console.log('emit the room data, player join the room (one player)');
+    socket.emit('open',{room_list:room_list,room_id:player.room_id, room_name:room_list[player.room_id].room_name}); 
+  };
+
+  //send end game message to all players in this room
+  var endGame=function(){
+    if(show_emit) console.log("emit end game (all players)");
+    socket.emit('system',{state:room_list[player.room_id].state,type:'endGame',last_player_data:room_list[player.room_id].player_data,room_id:player.room_id});
+    socket.broadcast.emit('system',{state:room_list[player.room_id].state,type:'endGame',last_player_data:room_list[player.room_id].player_data,room_id:player.room_id});            
+  }
+
+  //remove player from player list
+  var removePlayer=function(){
+    for(i=0;i<room_list[player.room_id].player_data.length;i++){
+      if(player.id==room_list[player.room_id].player_data[i]['id']){
+        room_list[player.room_id].player_data.splice(i,1);
+      }
+    }
+
+    //if the room owner disconnected, set new room owner
+    if(player.id==room_list[player.room_id].room_owner_id && room_list[player.room_id].player_data.length>0)
+      room_list[player.room_id].room_owner_id = room_list[player.room_id].player_data[0]['id'];
+    else if(player.id==room_list[player.room_id].room_owner_id && room_list[player.room_id].player_data.length==0)
+      room_list[player.room_id].room_owner_id = null;
+  }
+
+
+  //Wait State
+  var insertPlayerData=function(name){
+    if(room_list[player.room_id].room_owner_id==null) room_list[player.room_id].room_owner_id = room_list[player.room_id].player_id;
+
+    //tell player they are join
+    if(show_emit) console.log("emit player is join (one player)");
+    socket.emit('system',{state:room_list[player.room_id].state,type:'join',value:true,player_id:room_list[player.room_id].player_id,room_owner_id:room_list[player.room_id].room_owner_id,room_id:player.room_id});
+    
+    player.name = name;
+
+    var obj = {time:getTime(),color:player.color,room_id:player.room_id};
+    obj['text']=player.name;
     obj['author']='System';
     obj['type']='welcome';
-    obj['state']=room_list[client.room_id].state;    
+    obj['state']=room_list[player.room_id].state;    
 
 
     //add this player into player data
-    var one_player_data = {id:room_list[client.room_id].player_id,name:client.name,role:null,ready:false,vote:null,color:client.color,teammembers:false}; //id & name & character & ready
-    client.id = one_player_data['id'];
-    client.index = room_list[client.room_id].player_data.length;
-    room_list[client.room_id].player_data.push(one_player_data);
-    room_list[client.room_id].player_id ++;
-    //console.log(client.name + " id="+one_player_data['id']);
+    var one_player_data = {id:room_list[player.room_id].player_id,name:player.name,role:null,ready:false,vote:null,color:player.color,teammembers:false}; //id & name & character & ready
+    player.id = one_player_data['id'];
+    player.index = room_list[player.room_id].player_data.length;
+    room_list[player.room_id].player_data.push(one_player_data);
+    room_list[player.room_id].player_id ++;
 
-    //返回欢迎语
     socket.emit('system',obj);
-    //广播新用户已登陆
     socket.broadcast.emit('system',obj);
 
-    if(room_list[client.room_id].player_data.length>=5){
-      if(show_emit) console.log("emit client can show ready (all clients)");
-      socket.emit('system',{state:room_list[client.room_id].state,type:'ready',room_id:client.room_id});
-      socket.broadcast.emit('system',{state:room_list[client.room_id].state,type:'ready',room_id:client.room_id});
-    }
-          
+    if(room_list[player.room_id].player_data.length>=5){
+      if(show_emit) console.log("emit player can show ready (all players)");
+      socket.emit('system',{state:room_list[player.room_id].state,type:'ready',room_id:player.room_id});
+      socket.broadcast.emit('system',{state:room_list[player.room_id].state,type:'ready',room_id:player.room_id});
+    }   
   };
 
-  var updateReadyState=function(client_state){
-    var obj={time:getTime(),color:client.color};
+  var updateReadyState=function(player_state){
+    var obj={time:getTime(),color:player.color};
     obj['author']='System';
     obj['type']='ready';
-    obj['state']=room_list[client.room_id].state;
-    //console.log(client.name +" " + client_state);
-    //find the players index
-    for(i=0;i<room_list[client.room_id].player_data.length;i++){
-      if(client.id==room_list[client.room_id].player_data[i]['id'])
-        room_list[client.room_id].player_data[i]['ready']=client_state;
+    obj['state']=room_list[player.room_id].state;
+    for(i=0;i<room_list[player.room_id].player_data.length;i++){
+      if(player.id==room_list[player.room_id].player_data[i]['id'])
+        room_list[player.room_id].player_data[i]['ready']=player_state;
     }
-    
   };
+
   var setGoodEvil=function(){
-    room_list[client.room_id].max_good = good_evil_count[room_list[client.room_id].player_data.length-5][0];
-    room_list[client.room_id].max_evil = good_evil_count[room_list[client.room_id].player_data.length-5][1];
+    room_list[player.room_id].max_good = good_evil_count[room_list[player.room_id].player_data.length-5][0];
+    room_list[player.room_id].max_evil = good_evil_count[room_list[player.room_id].player_data.length-5][1];
   };
+  
+  //clear last player data
   var askCharactersSet=function(){
-    //clear last player data
-    //console.log('room owner, ask characters set');
     updatePlayerList();
-    var ask = {type:'chooseCharactersSet',state:room_list[client.room_id].state,good:room_list[client.room_id].max_good,evil:room_list[client.room_id].max_evil,room_id:client.room_id};
-    if(show_emit) console.log('emit ask room owner '+client.name+' ('+client.id+') to set characters (one client)');
+    var ask = {type:'chooseCharactersSet',state:room_list[player.room_id].state,good:room_list[player.room_id].max_good,evil:room_list[player.room_id].max_evil,room_id:player.room_id};
+    if(show_emit) console.log('emit ask room owner '+player.name+' ('+player.id+') to set characters (one player)');
     socket.emit('system',ask);
     socket.broadcast.emit('system',ask);
     
   };
   var updateAllReadyState=function(){
     all_ready = true; //check if all the players are ready
-    for(i=0;i<room_list[client.room_id].player_data.length;i++){
-      all_ready = all_ready & room_list[client.room_id].player_data[i]['ready'];
+    for(i=0;i<room_list[player.room_id].player_data.length;i++){
+      all_ready = all_ready & room_list[player.room_id].player_data[i]['ready'];
     }
-    //console.log(all_ready);
-    if(all_ready){
-      if(show_emit) console.log("emit tell all clients everyone is ready (all clients)");
-      socket.emit('system',{state:room_list[client.room_id].state,type:'allReady',value:true,room_id:client.room_id});
-      socket.broadcast.emit('system',{state:room_list[client.room_id].state,type:'allReady',value:true,room_id:client.room_id});
-    }else{
-      if(show_emit) console.log("emit tell all clients someone is not ready (all clients)");
-      socket.emit('system',{state:room_list[client.room_id].state,type:'allReady',value:false,room_id:client.room_id});
-      socket.broadcast.emit('system',{state:room_list[client.room_id].state,type:'allReady',value:false,room_id:client.room_id});
 
+    //All players is ready
+    if(all_ready){
+      if(show_emit) console.log("emit tell all players everyone is ready (all players)");
+      socket.emit('system',{state:room_list[player.room_id].state,type:'allReady',value:true,room_id:player.room_id});
+      socket.broadcast.emit('system',{state:room_list[player.room_id].state,type:'allReady',value:true,room_id:player.room_id});
+    }
+    
+    //Some players are not ready
+    else{
+      if(show_emit) console.log("emit tell all players someone is not ready (all players)");
+      socket.emit('system',{state:room_list[player.room_id].state,type:'allReady',value:false,room_id:player.room_id});
+      socket.broadcast.emit('system',{state:room_list[player.room_id].state,type:'allReady',value:false,room_id:player.room_id});
     }
   };
-//--------------wait states--------------//
-//--------------randomCharacters states--------------//
+
+  //Random Role State
   var randomSetCharacters=function(){
-    while(room_list[client.room_id].good_characters.length<room_list[client.room_id].max_good){
-      room_list[client.room_id].good_characters.push('Stupid Good');
+    while(room_list[player.room_id].good_characters.length<room_list[player.room_id].max_good){
+      room_list[player.room_id].good_characters.push('Good Slave');
     }
-    while(room_list[client.room_id].evil_characters.length<room_list[client.room_id].max_evil){
-      room_list[client.room_id].evil_characters.push('Stupid Evil');
+
+    //insert good role to all role
+    for(i=0;i<room_list[player.room_id].good_characters.length;i++){
+      room_list[player.room_id].all_role.push([room_list[player.room_id].good_characters[i],'Good']);
     }
-    //all_characters = good_characters.concat(evil_characters);
-    for(i=0;i<room_list[client.room_id].good_characters.length;i++){
-      room_list[client.room_id].all_characters.push([room_list[client.room_id].good_characters[i],'Good']);
+
+    while(room_list[player.room_id].evil_characters.length<room_list[player.room_id].max_evil){
+      room_list[player.room_id].evil_characters.push('Evil Minion');
     }
-    for(i=0;i<room_list[client.room_id].evil_characters.length;i++){
-      room_list[client.room_id].all_characters.push([room_list[client.room_id].evil_characters[i],'Evil']);
+
+    //insert evil role to all role
+    for(i=0;i<room_list[player.room_id].evil_characters.length;i++){
+      room_list[player.room_id].all_role.push([room_list[player.room_id].evil_characters[i],'Evil']);
     }
+
+    //Shuffle and Assign Role to player
     shuffleArray();
-    //console.log(all_characters);
-    for(i=0;i<room_list[client.room_id].player_data.length;i++){
-      room_list[client.room_id].player_data[i]['ready']=false;
-      room_list[client.room_id].player_data[i]['role']=room_list[client.room_id].all_characters[i];
+
+    //console.log(all_role);
+    for(i=0;i<room_list[player.room_id].player_data.length;i++){
+      room_list[player.room_id].player_data[i]['ready']=false;
+      room_list[player.room_id].player_data[i]['role']=room_list[player.room_id].all_role[i];
     }
-    //console.log(player_data);
   };
+
   var shuffleArray=function(){
-    var counter = room_list[client.room_id].all_characters.length;
+    var counter = room_list[player.room_id].all_role.length;
     while(counter>0){
       var index = Math.floor(Math.random()*counter);
       counter--;
-      var temp = room_list[client.room_id].all_characters[counter];
-      room_list[client.room_id].all_characters[counter] = room_list[client.room_id].all_characters[index];
-      room_list[client.room_id].all_characters[index] = temp;
+      var temp = room_list[player.room_id].all_role[counter];
+      room_list[player.room_id].all_role[counter] = room_list[player.room_id].all_role[index];
+      room_list[player.room_id].all_role[index] = temp;
     }
   };
-//--------------randomCharacters states--------------//
-//--------------sendMission states--------------//
+
+  //Send Mssion State
   var setLeader=function(){
     resetTeamMembers();
     updateTeamMemberList();
-    if(room_list[client.room_id].leader_id==null){
-      room_list[client.room_id].leader_id = room_list[client.room_id].player_data[ Math.floor((Math.random() * room_list[client.room_id].player_data.length)) ]['id'];
-    }else{
-      if(room_list[client.room_id].leader_id == room_list[client.room_id].player_data[room_list[client.room_id].player_data.length-1]['id']){
-        room_list[client.room_id].leader_id = room_list[client.room_id].player_data[0]['id'];
+
+    //Set Team Leader
+    if(room_list[player.room_id].leader_id==null){
+      room_list[player.room_id].leader_id = room_list[player.room_id].player_data[ Math.floor((Math.random() * room_list[player.room_id].player_data.length)) ]['id'];
+    }
+    
+    else{
+      if(room_list[player.room_id].leader_id == room_list[player.room_id].player_data[room_list[player.room_id].player_data.length-1]['id']){
+        room_list[player.room_id].leader_id = room_list[player.room_id].player_data[0]['id'];
       }else{
-        for(i=0;i<room_list[client.room_id].player_data.length;i++){
-          if(room_list[client.room_id].leader_id == room_list[client.room_id].player_data[i]['id']){
-            room_list[client.room_id].leader_id = room_list[client.room_id].player_data[i+1]['id'];
+        for(i=0;i<room_list[player.room_id].player_data.length;i++){
+          if(room_list[player.room_id].leader_id == room_list[player.room_id].player_data[i]['id']){
+            room_list[player.room_id].leader_id = room_list[player.room_id].player_data[i+1]['id'];
             break;
           }
         }
       }
     }
-    //console.log("set leader, turn: ");
-    //console.log(turn);
-    num_of_team = team_assignment[room_list[client.room_id].player_data.length-5][0][room_list[client.room_id].turn];
-    two_fail = team_assignment[room_list[client.room_id].player_data.length-5][1];
 
-    if(show_emit) console.log("emit set leader (all clients)");
-    socket.emit('system',{state:room_list[client.room_id].state,type:'setLeader',leader_id:room_list[client.room_id].leader_id,team_size:num_of_team,two_fail:two_fail,turn:room_list[client.room_id].turn,vote_turn:room_list[client.room_id].vote_turn,room_id:client.room_id});
-    socket.broadcast.emit('system',{state:room_list[client.room_id].state,type:'setLeader',leader_id:room_list[client.room_id].leader_id,team_size:num_of_team,two_fail:two_fail,turn:room_list[client.room_id].turn,vote_turn:room_list[client.room_id].vote_turn,room_id:client.room_id});
+    num_of_team = team_assignment[room_list[player.room_id].player_data.length-5][0][room_list[player.room_id].turn];
+    two_fail = team_assignment[room_list[player.room_id].player_data.length-5][1];
+
+    if(show_emit) console.log("emit set leader (all players)");
+    socket.emit('system',{state:room_list[player.room_id].state,type:'setLeader',leader_id:room_list[player.room_id].leader_id,team_size:num_of_team,two_fail:two_fail,turn:room_list[player.room_id].turn,vote_turn:room_list[player.room_id].vote_turn,room_id:player.room_id});
+    socket.broadcast.emit('system',{state:room_list[player.room_id].state,type:'setLeader',leader_id:room_list[player.room_id].leader_id,team_size:num_of_team,two_fail:two_fail,turn:room_list[player.room_id].turn,vote_turn:room_list[player.room_id].vote_turn,room_id:player.room_id});
     
-    //update player listu
+    //update player list
     updatePlayerList();
-    if(show_emit) console.log('emit set leader (all clients)');
-    socket.emit('system',{state:room_list[client.room_id].state,type:'setLeader',leader_id:room_list[client.room_id].leader_id,team_size:num_of_team,two_fail:two_fail,turn:room_list[client.room_id].turn,vote_turn:room_list[client.room_id].vote_turn,room_id:client.room_id});
-    socket.broadcast.emit('system',{state:room_list[client.room_id].state,type:'setLeader',leader_id:room_list[client.room_id].leader_id,team_size:num_of_team,two_fail:two_fail,turn:room_list[client.room_id].turn,vote_turn:room_list[client.room_id].vote_turn,room_id:client.room_id});
+    if(show_emit) console.log('emit set leader (all players)');
+    socket.emit('system',{state:room_list[player.room_id].state,type:'setLeader',leader_id:room_list[player.room_id].leader_id,team_size:num_of_team,two_fail:two_fail,turn:room_list[player.room_id].turn,vote_turn:room_list[player.room_id].vote_turn,room_id:player.room_id});
+    socket.broadcast.emit('system',{state:room_list[player.room_id].state,type:'setLeader',leader_id:room_list[player.room_id].leader_id,team_size:num_of_team,two_fail:two_fail,turn:room_list[player.room_id].turn,vote_turn:room_list[player.room_id].vote_turn,room_id:player.room_id});
     
   };
 
   var resetVote=function(){
-    for(i=0;i<room_list[client.room_id].player_data.length;i++){
-      room_list[client.room_id].player_data[i]['vote']=null;
+    for(i=0;i<room_list[player.room_id].player_data.length;i++){
+      room_list[player.room_id].player_data[i]['vote']=null;
     }
   }
   var resetTeamMembers=function(){
-    for(i=0;i<room_list[client.room_id].player_data.length;i++){
-      room_list[client.room_id].player_data[i]['teammembers']=false;
+    for(i=0;i<room_list[player.room_id].player_data.length;i++){
+      room_list[player.room_id].player_data[i]['teammembers']=false;
     }
 
   }
   var updateTeamMemberList=function(){
-    if(show_emit) console.log('emit update team members (all clients)');
-    socket.emit('system',{state:room_list[client.room_id].state, type:'updateTeamMember', player_data:room_list[client.room_id].player_data,room_id:client.room_id});
-    socket.broadcast.emit('system',{state:room_list[client.room_id].state, type:'updateTeamMember', player_data:room_list[client.room_id].player_data,room_id:client.room_id});
+    if(show_emit) console.log('emit update team members (all players)');
+    socket.emit('system',{state:room_list[player.room_id].state, type:'updateTeamMember', player_data:room_list[player.room_id].player_data,room_id:player.room_id});
+    socket.broadcast.emit('system',{state:room_list[player.room_id].state, type:'updateTeamMember', player_data:room_list[player.room_id].player_data,room_id:player.room_id});
   }
-//--------------sendMission states--------------//
-//--------------vote states--------------//
+
+  //Vote States
   var voting=function(){
-    if(show_emit) console.log('emit start voting (all clients)');
-    socket.emit('system',{state:room_list[client.room_id].state,type:'vote',team_members:room_list[client.room_id].team_members, player_data:room_list[client.room_id].player_data,room_id:client.room_id});
-    socket.broadcast.emit('system',{state:room_list[client.room_id].state,type:'vote',team_members:room_list[client.room_id].team_members, player_data:room_list[client.room_id].player_data,room_id:client.room_id});
+    if(show_emit) console.log('emit start voting (all players)');
+    socket.emit('system',{state:room_list[player.room_id].state,type:'vote',team_members:room_list[player.room_id].team_members, player_data:room_list[player.room_id].player_data,room_id:player.room_id});
+    socket.broadcast.emit('system',{state:room_list[player.room_id].state,type:'vote',team_members:room_list[player.room_id].team_members, player_data:room_list[player.room_id].player_data,room_id:player.room_id});
 
     };
 
+  //update vote (true/false) into player_data
   var updateVote=function(value){
-    //update vote (true/false) into player_data
     var agree = 0;
     var disagree = 0;
-    for(i=0;i<room_list[client.room_id].player_data.length;i++){
-      if(room_list[client.room_id].player_data[i]['id']==client.id){
-        room_list[client.room_id].player_data[i]['vote']=value;
+
+    for(i=0;i<room_list[player.room_id].player_data.length;i++){
+      if(room_list[player.room_id].player_data[i]['id']==player.id){
+        room_list[player.room_id].player_data[i]['vote']=value;
       }
-      if(room_list[client.room_id].player_data[i]['vote']==true){
+
+      if(room_list[player.room_id].player_data[i]['vote']==true){
         agree++;
-      }else if(room_list[client.room_id].player_data[i]['vote']==false){
+
+      }else if(room_list[player.room_id].player_data[i]['vote']==false){
         disagree++;
       }
     }
-    if((agree+disagree)==room_list[client.room_id].player_data.length){//if all players have voted
+
+    if((agree+disagree)==room_list[player.room_id].player_data.length){//if all players have voted
+
+      //if disagree>=agree, Mssion Fail
       if(disagree>=agree){
-      //if disagree>=agree, back to sendMission state
-        room_list[client.room_id].vote_turn++;
+        room_list[player.room_id].vote_turn++;
         changeState(states[2]);
         setLeader();
 
       }else if(agree>disagree){
-      //if agree>disagree, go to mission state
-        room_list[client.room_id].vote_turn = 0;
+      //if disagree>=agree, Mssion Fail
+        room_list[player.room_id].vote_turn = 0;
         changeState(states[4]);
         missionVote();
         updatePlayerList();
@@ -617,116 +647,106 @@ io.sockets.on('connection', function (socket) {
     }
   }
 
-//--------------vote states--------------//
-//--------------mission states--------------//
+
+//Mission states
   var missionVote=function(){
-    if(show_emit) console.log('emit to do mission (all clients)');
-    socket.emit('system',{state:room_list[client.room_id].state,type:'vote',team_members:room_list[client.room_id].team_members,room_id:client.room_id});
-    socket.broadcast.emit('system',{state:room_list[client.room_id].state,type:'vote',team_members:room_list[client.room_id].team_members,room_id:client.room_id}); 
+    if(show_emit) console.log('emit to do mission (all players)');
+    socket.emit('system',{state:room_list[player.room_id].state,type:'vote',team_members:room_list[player.room_id].team_members,room_id:player.room_id});
+    socket.broadcast.emit('system',{state:room_list[player.room_id].state,type:'vote',team_members:room_list[player.room_id].team_members,room_id:player.room_id}); 
 
   }
   var updateMissionVote=function(value){
-    var two_fail = team_assignment[room_list[client.room_id].player_data.length-5][1];
-    if(value) room_list[client.room_id].vote_success++;
-    else room_list[client.room_id].vote_fail++;
+    var two_fail = team_assignment[room_list[player.room_id].player_data.length-5][1];
+    if(value) room_list[player.room_id].vote_success++;
+    else room_list[player.room_id].vote_fail++;
 
-    if((room_list[client.room_id].vote_success+room_list[client.room_id].vote_fail)==room_list[client.room_id].team_members.length){
-      room_list[client.room_id].turn++;
+    if((room_list[player.room_id].vote_success+room_list[player.room_id].vote_fail)==room_list[player.room_id].team_members.length){
+      room_list[player.room_id].turn++;
       var new_state;
-      if(room_list[client.room_id].turn==4 && two_fail){
-        if(room_list[client.room_id].vote_fail>=2){
+      if(room_list[player.room_id].turn==4 && two_fail){
+        if(room_list[player.room_id].vote_fail>=2){
           //fail
           new_state = states[6];
-          room_list[client.room_id].fail_time++;
+          room_list[player.room_id].fail_time++;
 
         }else{
           //success
           new_state = states[5];
-          room_list[client.room_id].success_time++;
+          room_list[player.room_id].success_time++;
 
         }
       }else{
-        if(room_list[client.room_id].vote_fail>=1){
+        if(room_list[player.room_id].vote_fail>=1){
           //fail
           new_state = states[6];
-          room_list[client.room_id].fail_time++;
+          room_list[player.room_id].fail_time++;
 
         }else{
           //success
           new_state = states[5];
-          room_list[client.room_id].success_time++;
+          room_list[player.room_id].success_time++;
 
         }
       }
       changeState(new_state);
-      if(show_emit) console.log('emit to update new game details (all clients)');
-      socket.emit('system',{state:room_list[client.room_id].state,type:'update',detail:[room_list[client.room_id].vote_success,room_list[client.room_id].vote_fail,room_list[client.room_id].success_time,room_list[client.room_id].fail_time],room_id:client.room_id});
-      socket.broadcast.emit('system',{state:room_list[client.room_id].state,type:'update',detail:[room_list[client.room_id].vote_success,room_list[client.room_id].vote_fail,room_list[client.room_id].success_time,room_list[client.room_id].fail_time],room_id:client.room_id}); 
+      if(show_emit) console.log('emit to update new game details (all players)');
+      socket.emit('system',{state:room_list[player.room_id].state,type:'update',detail:[room_list[player.room_id].vote_success,room_list[player.room_id].vote_fail,room_list[player.room_id].success_time,room_list[player.room_id].fail_time],room_id:player.room_id});
+      socket.broadcast.emit('system',{state:room_list[player.room_id].state,type:'update',detail:[room_list[player.room_id].vote_success,room_list[player.room_id].vote_fail,room_list[player.room_id].success_time,room_list[player.room_id].fail_time],room_id:player.room_id}); 
       changeState(states[7]);
       updateGame();
     }
 
       
   }
-//--------------mission states--------------//
-//--------------update states--------------//
+
+//update states
 var updateGame=function(){
-  room_list[client.room_id].vote_success = 0;
-  room_list[client.room_id].vote_fail = 0;
-  if(room_list[client.room_id].fail_time>=3){//Evil win
+  room_list[player.room_id].vote_success = 0;
+  room_list[player.room_id].vote_fail = 0;
+
+  //Fail 3 or more, Evil win
+  if(room_list[player.room_id].fail_time>=3){
     changeState(states[9]);
     endGame();
     init();
+
     changeState(states[0]);
     updatePlayerList();
-  }else if(room_list[client.room_id].success_time>=3){//go into find merlin
+
+  //Success 3 or more, Let assassin find Merlin
+  }else if(room_list[player.room_id].success_time>=3){
     changeState(states[8]);
     var kill_list = [];
-    for(i=0;i<room_list[client.room_id].player_data.length;i++){
-      if(room_list[client.room_id].player_data[i]['role'][1]=='Good'){
-        kill_list.push([room_list[client.room_id].player_data[i]['id'], room_list[client.room_id].player_data[i]['name']]);
+    for(i=0;i<room_list[player.room_id].player_data.length;i++){
+      if(room_list[player.room_id].player_data[i]['role'][1]=='Good'){
+        kill_list.push([room_list[player.room_id].player_data[i]['id'], room_list[player.room_id].player_data[i]['name']]);
       }
     }
-    //console.log(kill_list);
-    if(show_emit) console.log('emit kill Merlin and kill list (all clients)');
-    socket.emit('system',{state:room_list[client.room_id].state,type:'kill',kill_list:kill_list,room_id:client.room_id});
-    socket.broadcast.emit('system',{state:room_list[client.room_id].state,type:'kill',kill_list:kill_list,room_id:client.room_id});
+
+    if(show_emit) console.log('emit kill Merlin and kill list (all players)');
+    socket.emit('system',{state:room_list[player.room_id].state,type:'kill',kill_list:kill_list,room_id:player.room_id});
+    socket.broadcast.emit('system',{state:room_list[player.room_id].state,type:'kill',kill_list:kill_list,room_id:player.room_id});
     updatePlayerList();
   }else{
     changeState(states[2]);
     setLeader();
   }
 }
-//--------------update states--------------//
-//--------------findMerlin states--------------//
+
+//findMerlin State
 var findMerlinOrNot=function(id){
-  for(i=0;i<room_list[client.room_id].player_data.length;i++){
-    if(room_list[client.room_id].player_data[i]['id']==id && room_list[client.room_id].player_data[i]['role'][0]=="Merlin"){
+  for(i=0;i<room_list[player.room_id].player_data.length;i++){
+    if(room_list[player.room_id].player_data[i]['id']==id && room_list[player.room_id].player_data[i]['role'][0]=="Merlin"){
       //evil win
       return true;
     }
   }
   return false;
 }
-//--------------findMerlin states--------------//
-
-
-//--------------Function to use here--------------//
-
 });
-//----------------------------------------------------------------------//
 
 
-
-
-
-
-
-
-
-//----------------------------------------------------------------------//
-//dont change now
-//express基本配置
+//express
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
   app.set('views', __dirname + '/views');
@@ -742,7 +762,7 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 });
 
-// 指定webscoket的客户端的html文件
+//webscoket
 app.get('/', function(req, res){
   res.sendfile('views/chat.html');
 });
@@ -772,4 +792,3 @@ var getColor=function(){
   //console.log(color);
   return color;
 }
-//----------------------------------------------------------------------//
