@@ -246,15 +246,15 @@ img {
 }
 
 .avalonplayer{
-    width: 700px;
-    height: 150px;
+    width: 540px;
+    height: 140px;
     background-image: url(img/avalon\ player.png);
     background-repeat: no-repeat;
 }
 
 .avalonquest{
-    width: 700px;
-    height: 400px;
+    width: 540px;
+    height: 260px;
     background-image: url(img/avalon\ quest.png);
     background-repeat: no-repeat;
 }
