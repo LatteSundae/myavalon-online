@@ -15,6 +15,24 @@
 </head>
 <body>
     <h1 id="title" style="height:40px; color: goldenrod; font-weight: bold;"> &nbsp; Avalon Online</h1>
+    <div class="popup">
+        <button id="close">&times;</button>
+        <h2>Automatic Pop-Up</h2>
+        <p>
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Expedita distinctio fugiat alias iure qui, commodi minima magni ullam aliquam dignissimos?
+        </p>
+        <a href="#">Let's Go</a>
+    </div>
+    <script type="text/javascript">
+        window.addEventListener("load", function(){
+            setTimeout(
+                function open(event){
+                    document.querySelector(".popup").style.display = "block";
+                },
+                2000 
+            )
+        });
+    </script>
     <br><br><div class="findRoom" style="color: black; border-radius: 25px; background-color: #ecc29b; border-style: solid; border-color: silver; border-width: 5px; padding: 20px;">
         Choose room
     </div>
@@ -128,3 +146,7 @@
     </div>
 </body>
 </html>
+
+
+
+    <!--Script-->
