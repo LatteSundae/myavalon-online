@@ -73,7 +73,7 @@ io.sockets.on('connection', function (socket) {
       state : states[0], //initial states
       
       //player information
-      player_data : [], //id, name, role[special role, evil/good], ready, color, teammembers
+      player_data : [], //id, name, role[special character, evil/good], ready, color, teammembers
       player_id : 0, //for creating unique id
       room_owner_id : null, //room owner
       leader_id : null //leader to choose members
@@ -444,7 +444,7 @@ io.sockets.on('connection', function (socket) {
 
 
     //add this player into player data
-    var one_player_data = {id:room_list[player.room_id].player_id,name:player.name,role:null,ready:false,vote:null,color:player.color,teammembers:false}; //id & name & role & ready
+    var one_player_data = {id:room_list[player.room_id].player_id,name:player.name,role:null,ready:false,vote:null,color:player.color,teammembers:false}; //id & name & character & ready
     player.id = one_player_data['id'];
     player.index = room_list[player.room_id].player_data.length;
     room_list[player.room_id].player_data.push(one_player_data);
@@ -477,10 +477,10 @@ io.sockets.on('connection', function (socket) {
   };
   
   //clear last player data
-  var askrolesSet=function(){
+  var askCharactersSet=function(){
     updatePlayerList();
-    var ask = {type:'chooserolesSet',state:room_list[player.room_id].state,good:room_list[player.room_id].max_good,evil:room_list[player.room_id].max_evil,room_id:player.room_id};
-    if(show_emit) console.log('emit ask room owner '+player.name+' ('+player.id+') to set roles (one player)');
+    var ask = {type:'chooseCharactersSet',state:room_list[player.room_id].state,good:room_list[player.room_id].max_good,evil:room_list[player.room_id].max_evil,room_id:player.room_id};
+    if(show_emit) console.log('emit ask room owner '+player.name+' ('+player.id+') to set characters (one player)');
     socket.emit('system',ask);
     socket.broadcast.emit('system',ask);
     
@@ -507,7 +507,7 @@ io.sockets.on('connection', function (socket) {
   };
 
   //Random Role State
-  var randomSetroles=function(){
+  var randomSetCharacters=function(){
     while(room_list[player.room_id].good_roles.length<room_list[player.room_id].max_good){
       room_list[player.room_id].good_roles.push('Good Slave');
     }
