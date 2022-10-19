@@ -245,6 +245,14 @@ img {
     background-size: 30px;
 }
 
+.avalonplayer{
+    width: 150px;
+    height: 150px;
+    background-image: url(img/avalon\ player.png);
+    background-repeat: no-repeat;
+    background-size: 150px;
+}
+
 /*Pop Up Box*/
 #overlay {
 position: fixed;
