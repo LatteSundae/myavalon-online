@@ -333,6 +333,27 @@ div {width:500px;}
     box-shadow: 0 5px #666;
     transform: translateY(4px);
 }
+
+#roomJoin{
+    font-family: 'Poppins'
+    padding: 8px 11px;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px #6c6c6c;
+}
+#roomJoin:hover {background-color:goldenrod}
+#roomJoin:active {
+    background-color: goldenrod;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
 #playerList{
     margin:10px;
     padding:5px; 
