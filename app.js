@@ -792,7 +792,3 @@ var getColor=function(){
   //console.log(color);
   return color;
 }
-
-function onPlayerReady(event) {
-  event.target.setVolume(2);
-}
