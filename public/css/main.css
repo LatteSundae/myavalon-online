@@ -334,7 +334,7 @@ div {width:500px;}
     transform: translateY(4px);
 }
 
-#roomJoin{
+.roomJoin{
     font-family: 'Poppins'
     padding: 8px 11px;
     font-size: 20px;
@@ -348,8 +348,8 @@ div {width:500px;}
     border-radius: 15px;
     box-shadow: 0 4px #6c6c6c;
 }
-#roomJoin:hover {background-color:goldenrod}
-#roomJoin:active {
+.roomJoin:hover {background-color:goldenrod}
+.roomJoin:active {
     background-color: goldenrod;
     box-shadow: 0 5px #666;
     transform: translateY(4px);
