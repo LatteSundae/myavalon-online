@@ -626,6 +626,7 @@ $(function() {
         for (i = 0; i < team_members.length; i++) {
             j = i+1;
             id = team_members[i][0] + 1;
+            console.log(team_members[i][0]);
             inner_span += "&nbsp;&nbsp;"+ j +". "+ "<span>" + team_members[i][1] + " (" + id + ")<span><br>";
         }
 
