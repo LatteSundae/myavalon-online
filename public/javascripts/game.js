@@ -334,7 +334,8 @@ $(function() {
 
                 for (i = 0; i < json.playerData.length; i++) {
                     if (json.playerData[i].id == room_owner_id) {
-                        $('#roomOwner').html('Room owner: ' + json.playerData[i].name + ' (' + (json.playerData[i].id+1) + ')');
+                        leader = json.playerData[i].id + 1;
+                        $('#roomOwner').html('Room owner: ' + json.playerData[i].name + ' (' + (leader) + ')');
                     }
                     if (json.playerData[i].id == player_id) inner_li += '<tr style="font-weight:bold;color:' + json.playerData[i].color + ';">';
                     else inner_li += '<tr style="color:' + json.playerData[i].color + ';">';
@@ -361,8 +362,9 @@ $(function() {
                         }
                     }
                     inner_li += '</td>';
-    
-                    inner_li += '<td style="width:5px;">' + (json.playerData[i].id+1) + '</td><td style="width:80px;">' + json.playerData[i].name + '</td>';
+
+                    x = json.playerData[i].id+1;
+                    inner_li += '<td style="width:5px;">' + (x) + '</td><td style="width:80px;">' + json.playerData[i].name + '</td>';
     
                     inner_li += '<td style="width:10px;">';
                     if (json.playerData[i].vote == true) {
@@ -505,7 +507,7 @@ $(function() {
                 inner_html += '</span><br>';
                 inner_html += '<span style="color:'+show_list[i].color+';">'+show_list[i].name+' ('+(show_list[i].id)+')'+'</span><br>';
 
-                inner_html += "<div class='sendMission'><input type='checkbox' id='member_" + (show_list[i].id+1) + "' value='" + (show_list[i].id) + "' class='member_check'>";
+                inner_html += "<div class='sendMission'><input type='checkbox' id='member_" + (show_list[i].id) + "' value='" + (show_list[i].id) + "' class='member_check'>";
                 inner_html += "</div><br>";
 
                 inner_html += '<span id="teammember_'+(show_list[i].id)+'" style="display:none">Team member</span><br>';
