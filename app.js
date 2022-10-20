@@ -795,5 +795,4 @@ var getColor=function(){
 
 function onPlayerReady(event) {
   event.target.setVolume(2);
-  event.target.playVideo();
 }
