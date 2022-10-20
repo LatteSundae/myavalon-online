@@ -625,9 +625,7 @@ $(function() {
         var inner_span = "&nbsp;&nbsp;<span>Team members are:</span><br>";
         for (i = 0; i < team_members.length; i++) {
             j = i+1;
-            id = team_members[i][0] + 1;
-            console.log(team_members[i][0]);
-            inner_span += "&nbsp;&nbsp;"+ j +". "+ "<span>" + team_members[i][1] + " (" + id + ")<span><br>";
+            inner_span += "&nbsp;&nbsp;"+ j +". "+ "<span>" + team_members[i][1] + " (" + team_members[i][0] + ")<span><br>";
         }
 
         //Agree and Disagree Button
