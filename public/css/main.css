@@ -141,11 +141,197 @@ div {width:500px;}
     float:left; 
     margin-top:15px; 
 }
+
+/*Button*/
 #playButton{
+    font-family: 'Poppins'
+    padding: 8px 11px;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px #6c6c6c;
     display: none;
 }
+#playButton:hover {background-color: #3e8e41}
+#playButton:active {
+    background-color: #3e8e41;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
 #readyButton{
-    display:none;
+    font-family: 'Poppins'
+    padding: 8px 11px;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px #6c6c6c;
+    display: none;
+}
+#readyButto:hover {background-color: #3e8e41}
+#readyButton:active {
+    background-color: #3e8e41;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+#successButton{
+    font-family: 'Poppins'
+    padding: 8px 11px;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px #6c6c6c;
+}
+#successButton:hover {background-color: goldenrod}
+#successButton:active {
+    background-color: goldenrod;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+#failButton{
+    font-family: 'Poppins'
+    padding: 8px 11px;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px #6c6c6c;
+}
+#failButton:hover {background-color: red}
+#failButton:active {
+    background-color: red;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+#voteAgreeButton{
+    font-family: 'Poppins'
+    padding: 8px 11px;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px #6c6c6c;
+}
+#voteAgreeButton:hover {background-color: #3e8e41}
+#voteAgreeButton:active {
+    background-color: #3e8e41;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+#voteDisagreeButton{
+    font-family: 'Poppins'
+    padding: 8px 11px;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: :#ff0000
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px #6c6c6c;
+}
+#voteDisagreeButton:hover {background-color: #ff0000}
+#voteDisagreeButton:active {
+    background-color: red;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+#findButton{
+    font-family: 'Poppins'
+    padding: 8px 11px;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px #6c6c6c;
+}
+#findButton:hover {background-color: red}
+#findButton:active {
+    background-color: red;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+#memberDoneButton{
+    font-family: 'Poppins'
+    padding: 8px 11px;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px #6c6c6c;
+}
+#memberDoneButton:hover {background-color: goldenrod}
+#memberDoneButton:active {
+    background-color: goldenrod;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+#rolesDoneButton{
+    font-family: 'Poppins'
+    padding: 8px 11px;
+    font-size: 20px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: #4CAF50;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px #6c6c6c;
+}
+#rolesDoneButton:hover {background-color:goldenrod}
+#rolesDoneButton:active {
+    background-color: goldenrod;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
 }
 #playerList{
     margin:10px;
@@ -337,3 +523,4 @@ a{
     width: 384px;
     margin: -8px 1px -20px 584px; 
 }
+

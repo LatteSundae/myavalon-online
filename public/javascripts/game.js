@@ -211,7 +211,8 @@ $(function() {
                         var inner_span = "&nbsp;&nbsp;<span><span>Team members are:</span><br>";
                         for (i = 0; i < team_members.length; i++) {
                             j = i+1;
-                            inner_span += "&nbsp;&nbsp;"+ j +". "+ "<span>" + team_members[i][1] + " (" + team_members[i][0] + ")<span><br>";
+                            id = team_members[i][0] + 1;
+                            inner_span += "&nbsp;&nbsp;"+ j +". "+ "<span>" + team_members[i][1] + " (" + id + ")<span><br>";
                             if (team_members[i][0] == player_id) {
                                 //inner_span += "<span>You have to vote</span><br>";
                                 to_vote = true;
@@ -320,7 +321,8 @@ $(function() {
     
                 //Show leader
                 if (leader_id != null) {
-                    $('#leader').html('&nbsp;&nbsp;The leader is ' + leader_name + ' (' + leader_id + ')<br>');
+                    j = leader_id + 1;
+                    $('#leader').html('&nbsp;&nbsp;The leader is ' + leader_name + ' (' + j + ')<br>');
                 } 
                 else {
                     $('#leader').html('<br>');
@@ -501,12 +503,12 @@ $(function() {
                 }
 
                 inner_html += '</span><br>';
-                inner_html += '<span style="color:'+show_list[i].color+';">'+show_list[i].name+' ('+(show_list[i].id+1)+')'+'</span><br>';
+                inner_html += '<span style="color:'+show_list[i].color+';">'+show_list[i].name+' ('+(show_list[i].id)+')'+'</span><br>';
 
-                inner_html += "<div class='sendMission'><input type='checkbox' id='member_" + (show_list[i].id+1) + "' value='" + (show_list[i].id+1) + "' class='member_check'>";
+                inner_html += "<div class='sendMission'><input type='checkbox' id='member_" + (show_list[i].id+1) + "' value='" + (show_list[i].id) + "' class='member_check'>";
                 inner_html += "</div><br>";
 
-                inner_html += '<span id="teammember_'+(show_list[i].id+1)+'" style="display:none">Team member</span><br>';
+                inner_html += '<span id="teammember_'+(show_list[i].id)+'" style="display:none">Team member</span><br>';
                 
                 if(show_list[i].vote==true){
                     inner_html += '<span>agree</span><br>';
@@ -621,11 +623,12 @@ $(function() {
         var inner_span = "&nbsp;&nbsp;<span>Team members are:</span><br>";
         for (i = 0; i < team_members.length; i++) {
             j = i+1;
-            inner_span += "&nbsp;&nbsp;"+ j +". "+ "<span>" + team_members[i][1] + " (" + team_members[i][0] + ")<span><br>";
+            id = team_members[i][0] + 1;
+            inner_span += "&nbsp;&nbsp;"+ j +". "+ "<span>" + team_members[i][1] + " (" + id + ")<span><br>";
         }
 
         //Agree and Disagree Button
-        inner_span += "&nbsp;&nbsp;<button id='voteAgreeButton'>agree</button>&nbsp;&nbsp;";
+        inner_span += "<br>&nbsp;&nbsp;<button id='voteAgreeButton'>agree</button>&nbsp;&nbsp;";
         inner_span += "&nbsp;&nbsp;<button id='voteDisagreeButton'>disagree</button>";
         $('.vote').html(inner_span);
     };
