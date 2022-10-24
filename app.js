@@ -17,9 +17,6 @@ var room_id = 0; //Creating unique room id
 //emit = send a message to all the connected players
 var show_emit = false;
 
-
-
-
 var express = require('express')
   , path = require('path')
   , app = express()
